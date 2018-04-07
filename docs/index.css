@@ -1,0 +1,11 @@
+.container{
+  display:flex;
+}
+.container.column{
+  flex-direction: column;
+}
+
+textarea#idendityJSON{
+  height:375px;
+  width:364;
+}
