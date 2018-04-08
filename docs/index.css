@@ -5,7 +5,11 @@
   flex-direction: column;
 }
 
-textarea#idendityJSON{
-  height:375px;
+textarea{
   width:364;
+  height:150px;
 }
+
+/* textarea#idendityJSON{
+  height:150px;
+} */
