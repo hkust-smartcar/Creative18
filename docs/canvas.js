@@ -76,7 +76,7 @@ const Dist = ([x1,y1],[x2,y2]) => Math.sqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2))
 const EdgeDist = ([x,y]) => Math.min(x+1,y+1,8-x,8-y)
 
 const StringifyMatrix = m => {
-  return m.map(r=>r.join(' ')).join('\n')
+  return m.length+'\n'+m.map(r=>r.join(' ')).join('\n')
 }
 
 const box_size = 50
