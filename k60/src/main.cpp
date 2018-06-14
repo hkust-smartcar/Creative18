@@ -11,6 +11,7 @@
 #include <libbase/k60/mcg.h>
 #include <libsc/system.h>
 #include <libsc/led.h>
+#include "test.h"
 
 namespace libbase
 {
@@ -35,6 +36,9 @@ using namespace libbase::k60;
 int main(void)
 {
 	System::Init();
+
+	Test t;
+	t.test1();
 
 	//type your code here
 	Led::Config led_config;
