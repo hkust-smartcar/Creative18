@@ -40,6 +40,9 @@ public:
 	uint8_t sent_package_count = 0;
 	uint8_t receive_package_count = 0;
 	uint8_t delete_package_count = 0;
+	uint16_t bytecount = 0;
+	uint16_t destroyed_count = 0;
+	uint8_t buffer_limit = 20;
 
 	struct PkgType{
 		static const Byte
@@ -132,6 +135,8 @@ private:
 
 	Byte debug[100];
 
+	bool pkg_start = false;
+	uint8_t len = 0;
 };
 
 

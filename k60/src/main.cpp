@@ -44,7 +44,12 @@ int main(void)
 	Led::Config led_config;
     led_config.id = 0;
     Led led0(led_config);
+    led_config.id = 1;
+	Led led1(led_config);
 	while (true){
+		if(t.flag){
+			led1.SetEnable(t.flag);
+		}
 	    led0.Switch();
 	    System::DelayMs(250);
 	}

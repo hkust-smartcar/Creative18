@@ -21,6 +21,8 @@ public:
 	Test();
 	~Test();
 	void test1();
+	void test2();
+	bool flag = false;
 private:
 	Protocol* pProtocol;
 	St7735r lcd;

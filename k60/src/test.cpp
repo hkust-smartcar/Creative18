@@ -8,8 +8,8 @@
 #include "test.h"
 
 Test::Test():lcd(GetLcdConfig()),writer(GetTypeWriterConfig()){
-	pProtocol = new Protocol(this);
-	}
+pProtocol = new Protocol(this);
+}
 
 Test::~Test(){
 	delete pProtocol;
@@ -18,6 +18,10 @@ Test::~Test(){
 void Test::test1(){
 	pProtocol->RequestSetMotor(123);
 	pProtocol->RequestEncoder();
+}
+
+void Test::test2(){
+
 }
 
 St7735r::Config Test::GetLcdConfig(){

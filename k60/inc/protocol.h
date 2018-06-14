@@ -24,15 +24,19 @@ public:
 	Test* test;
 
 	Protocol():m_bt(0,1), test(nullptr){
-		m_bt.SetCustomHandler([&](const Bluetooth::Package& pkg){
-			this->Handler(pkg);
-		});
+		Init();
 	}
 
 	Protocol(Test* t):m_bt(0,1), test(t){
+		Init();
+	}
+
+	void Init(){
 		m_bt.SetCustomHandler([&](const Bluetooth::Package& pkg){
 			this->Handler(pkg);
 		});
+		memset(recievedPackageId,0,10);
+		memset(filteredRecievedPackageSumByType,0,10);
 	}
 
 	void SetResendPeriod(time_t period){
@@ -60,6 +64,8 @@ public:
 	void ResponseEncoderHandler(const Bluetooth::Package& pkg);
 
 private:
+	bool recievedPackageId[10];
+	uint8_t filteredRecievedPackageSumByType[10];
 };
 
 

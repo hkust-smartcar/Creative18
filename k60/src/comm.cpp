@@ -58,19 +58,37 @@ void Comm::Period(){
 }
 
 bool Comm::Listener(const Byte* data, const size_t& size){
+	bytecount++;
+	if(buffer.size()>100){
+		while(1);
+	}
 	memset(debug,0,100);
 	memcpy(debug,&*buffer.begin(),buffer.size());
 	for(uint8_t i=0; i<size; i++){
-		buffer.push_back(data[i]);
-		if(buffer.size() > 1){
-			if(data[i]==0xFF && buffer.size() == buffer[1]){
-				receive_package_count++;
-				BuildBufferPackage(buffer);
-			} else if(data[i]==0xAA && buffer.size() > buffer[1]){
-				delete_package_count++;
-				buffer.clear();
-				buffer.push_back(0xAA);
+		const char& ch = data[i];
+		if (!pkg_start && ch == 0xAA) {
+			buffer.push_back(ch);
+			pkg_start = true;
+			len = 0;
+		} else if (pkg_start && len == 0) {
+			len = ch;
+			buffer.push_back(ch);
+			if(len>=100){	//wrong package length
+				pkg_start = false;
 			}
+		} else if (pkg_start && buffer.size() < len - 1) {
+			buffer.push_back(ch);
+		} else if (pkg_start && buffer.size() == len - 1 && ch == 0xFF) {
+			buffer.push_back(ch);
+			BuildBufferPackage(buffer);
+			pkg_start = false;
+			len = 0;
+			buffer.clear();
+		} else {
+			pkg_start = false;
+			len = 0;
+			buffer.clear();
+			destroyed_count++;
 		}
 	}
 	return true;

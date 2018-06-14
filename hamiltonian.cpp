@@ -203,7 +203,7 @@ int main() {
             owal.push_back({temp, {i, j}});
         }
     }
-    sort(owal.begin(), owal.end(), [](Entry& a, Entry& b) {
+    sort(owal.begin(), owal.end(), [](const Entry& a, const Entry& b) {
         return a.weight < b.weight;
     });
     printOwal(owal);

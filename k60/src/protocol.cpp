@@ -11,6 +11,20 @@ void Protocol::Handler(const Bluetooth::Package& pkg){
 	Byte debug[100];
 	memset(debug,0,100);
 	memcpy(debug,&*pkg.data.begin(),pkg.data.size());
+	if(test){
+//		char c[20];
+//		sprintf(c,"sum %d %d", m_bt.receive_package_count, m_bt.bytecount);
+//		test->lcd.SetRegion({0,100,100,20});
+//		test->writer.WriteString(c);
+	}
+	if(pkg.type != Bluetooth::PkgType::kACK){
+		if(recievedPackageId[pkg.id%10]){
+			return;
+		}
+		recievedPackageId[pkg.id%10] = true;
+		recievedPackageId[(pkg.id+5)%10] = false;
+	}
+	filteredRecievedPackageSumByType[pkg.type]++;
 	switch(pkg.type){
 	case Bluetooth::PkgType::kRequestSetMotor:
 		RequestSetMotorHandler(pkg);
@@ -44,17 +58,19 @@ void Protocol::RequestSetMotorHandler(const Bluetooth::Package& pkg){
 	int16_t speed;
 	memcpy(&speed, &*pkg.data.begin(),2);
 	if(test != nullptr){
-		char c[20];
-		sprintf(c,"req sm %d", speed);
-		test->writer.WriteString(c);
+//		char c[20];
+//		sprintf(c,"%d req sm %d", filteredRecievedPackageSumByType[pkg.type], speed);
+//		test->lcd.SetRegion({0,0,100,20});
+//		test->writer.WriteString(c);
 	}
 }
 
 void Protocol::RequestEncoderHandler(const Bluetooth::Package& pkg){
 	if(test != nullptr){
-		char c[20];
-		sprintf(c,"req en");
-		test->writer.WriteString(c);
+//		char c[20];
+//		sprintf(c,"%d req en", filteredRecievedPackageSumByType[pkg.type]);
+//		test->lcd.SetRegion({0,20,100,20});
+//		test->writer.WriteString(c);
 	}
 	ResponseEncoder(7766);
 }
@@ -63,8 +79,10 @@ void Protocol::ResponseEncoderHandler(const Bluetooth::Package& pkg){
 	uint16_t count;
 	memcpy(&count, &*pkg.data.begin(),2);
 	if(test != nullptr){
-		char c[20];
-		sprintf(c,"obt en %d", count);
-		test->writer.WriteString(c);
+//		char c[20];
+//		sprintf(c,"%d obt en %d", filteredRecievedPackageSumByType[pkg.type], count);
+//		test->lcd.SetRegion({0,40,100,20});
+//		test->writer.WriteString(c);
+		test->flag = true;
 	}
 }
