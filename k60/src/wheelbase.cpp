@@ -39,7 +39,17 @@ void Wheelbase::MotorSetPower(uint8_t id, int16_t speed){
 	}
 }
 
+void Wheelbase::UpdateEncoders(){
+	encoder0.Update();
+	encoder_counts[0] += encoder0.GetCount();
+	encoder1.Update();
+	encoder_counts[1] += encoder1.GetCount();
+	encoder_counts[2] = pProtocol->AwaitRequestEncoder();
+}
+
 int32_t Wheelbase::EncoderGetCount(uint8_t id){
+//	Wheelbase::UpdateEncoders();
+	return encoder_counts[id];
 	switch(id){
 	case 0:
 		encoder0.Update();

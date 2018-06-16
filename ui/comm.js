@@ -2,9 +2,11 @@ const SerialPort = require('serialport')
 const Buffer = require('buffer').Buffer
 
 class Comm {
-  constructor(portName) {
+  constructor(portName, app) {
+    this.app = app
     this.port = new SerialPort(portName, { baudRate: 115200 })
     this.port.on('error', function (err) {
+      app.log(`'Error: ', ${err.message}`)
       console.log('Error: ', err.message);
     })
     this.port.on('data', data => {
@@ -13,6 +15,7 @@ class Comm {
       });
     })
     console.log(`connected to ${portName}`)
+    app.log(`connected to ${portName}`)
 
     this.m_sendqueue = []
     this.historic_package_sum = 0

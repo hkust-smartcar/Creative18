@@ -51,7 +51,11 @@ public:
 				kRequestEncoder = 0x02,
 				kResponseEncoder = 0x03,
 				kRequestMove = 0x04,
-				kRequestSetMotorById = 0x05;
+				kRequestSetMotorById = 0x05,
+				kRequestEncoderById = 0x06,
+				kResponseEncoderById = 0x07,
+				kRequestEncoders = 0x08,
+				kResponseEncoders = 0x09;
 	};
 
 	struct Package{

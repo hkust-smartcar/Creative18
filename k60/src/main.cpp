@@ -86,14 +86,15 @@ void master(){
 		console.Listen();
 
 
-	    encoder_value0 += clamp<int>(-100,wheelbase.EncoderGetCount(0),100);
-	    encoder_value1 += clamp<int>(-100,wheelbase.EncoderGetCount(1),100);
+	    encoder_value0 =wheelbase.EncoderGetCount(0);
+	    encoder_value1 =wheelbase.EncoderGetCount(1);
+		encoder_value2 =wheelbase.EncoderGetCount(2);
+		wheelbase.UpdateEncoders();
 
 	    if(System::Time()>nextRender){
 	    	led0.Switch();
 	    	console.ListItems();
 	    	nextRender = System::Time()+500;
-	    	encoder_value2 += clamp<int>(-100,wheelbase.EncoderGetCount(2),100);
 		}
 
 
@@ -118,6 +119,7 @@ void slave(){
 	time_t nextRender = 0;
 	while(1){
 		if(System::Time()>nextRender){
+			wheelbase.UpdateEncoders();
 
 			led0.Switch();
 			nextRender+=250;

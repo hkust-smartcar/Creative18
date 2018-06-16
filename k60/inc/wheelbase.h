@@ -27,6 +27,7 @@ public:
 	~Wheelbase();
 
 	void MotorSetPower(uint8_t id, int16_t speed);
+	void UpdateEncoders();
 	int32_t EncoderGetCount(uint8_t id);
 
 	void SetSpeedLocalXY(int16_t speedx, int16_t speedy);
@@ -62,7 +63,8 @@ private:
 	DirMotor motor0, motor1;
 	DirEncoder encoder0, encoder1;
 
-	int32_t prev_encoder2_count = 0;
+//	int32_t prev_encoder2_count = 0;
+	int32_t encoder_counts[3] = {0,0,0};
 
 	friend Protocol;
 	friend UiProtocol;

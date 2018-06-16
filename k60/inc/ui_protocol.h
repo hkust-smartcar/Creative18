@@ -59,15 +59,16 @@ public:
 	 */
 
 	uint8_t RequestMove(int16_t speedx, int16_t speedy);
-
-	//request encoder using the request encoder, the feedback will provided by ResponseEncoderHandler
-	//when requested, use the response encoder function
 	uint8_t RequestSetMotorById(uint8_t id, int16_t speed);
+	uint8_t ResponseEncoderById(uint8_t id, int32_t count);
+	uint8_t ResponseEncoders(int32_t count0, int32_t count1, int32_t count2);
 
 	void Handler(const Bluetooth::Package& pkg);
 
 	void RequestMoveHandler(const Bluetooth::Package& pkg);
 	void RequestSetMotorByIdHandler(const Bluetooth::Package& pkg);
+	void RequestEncoderByIdHandler(const Bluetooth::Package& pkg);
+	void RequestEncodersHandler(const Bluetooth::Package& pkg);
 
 private:
 	bool recievedPackageId[10];

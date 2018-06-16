@@ -4,28 +4,22 @@ const Comm = require('./comm')
 
 pkgid = 0
 
-Vue.component('hi',{
-  template: `<p>hi</p>`
-})
-
 var app = new Vue({
   el: '#app',
   data: {
     comm: null,
     str: 'hello world',
     ports: [],
-    port: null,
     parser: null,
     canvas: null,
     ctx: null,
     motor: [0,0,0],
+    logs:''
   },
   methods: {
+    log: str => app.logs+=str+'\n',
     connect: portName => {
-      app.comm = new Comm(portName)
-    },
-    write: buffer => {
-      app.port.write(buffer, console.log)
+      app.comm = new Comm(portName, app)
     },
     movecar: event => {
       let [x, y] = [event.clientX - 250, event.clientY - 250]

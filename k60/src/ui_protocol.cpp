@@ -32,7 +32,12 @@ void UiProtocol::Handler(const Bluetooth::Package& pkg){
 	case Bluetooth::PkgType::kRequestSetMotorById:
 		RequestSetMotorByIdHandler(pkg);
 		break;
-
+	case Bluetooth::PkgType::kRequestEncoderById:
+		RequestEncoderByIdHandler(pkg);
+		break;
+	case Bluetooth::PkgType::kRequestEncoders:
+		RequestEncodersHandler(pkg);
+		break;
 	}
 }
 
@@ -48,6 +53,21 @@ uint8_t UiProtocol::RequestSetMotorById(uint8_t id, int16_t speed){
 	memcpy(&*data.begin(), &id, 1);
 	memcpy(&*data.begin() + 1, &speed,2);
 	return m_bt.QueuePackage({Bluetooth::PkgType::kRequestSetMotorById,0,{}});
+}
+
+uint8_t UiProtocol::ResponseEncoderById(uint8_t id, int32_t count){
+	vector<Byte> data(5,0);
+	memcpy(&*data.begin(), &id, 1);
+	memcpy(&*data.begin()+1, &count, 4);
+	return m_bt.QueuePackage({Bluetooth::PkgType::kResponseEncoderById,0,data});
+}
+
+uint8_t UiProtocol::ResponseEncoders(int32_t count0, int32_t count1, int32_t count2){
+	vector<Byte> data(12,0);
+	memcpy(&*data.begin(), &count0, 4);
+	memcpy(&*data.begin()+4, &count1, 4);
+	memcpy(&*data.begin()+8, &count2, 4);
+	return m_bt.QueuePackage({Bluetooth::PkgType::kResponseEncoders,0,data});
 }
 
 void UiProtocol::RequestMoveHandler(const Bluetooth::Package& pkg){
@@ -67,5 +87,24 @@ void UiProtocol::RequestSetMotorByIdHandler(const Bluetooth::Package& pkg){
 
 	if(pWheelbase){
 		pWheelbase->MotorSetPower(motor_id, speed);
+	}
+}
+
+void UiProtocol::RequestEncoderByIdHandler(const Bluetooth::Package& pkg){
+	uint8_t encoder_id;
+	memcpy(&encoder_id, &*pkg.data.begin(),1);
+
+	if(pWheelbase){
+		ResponseEncoderById(encoder_id, pWheelbase->EncoderGetCount(encoder_id));
+	}
+}
+
+void UiProtocol::RequestEncodersHandler(const Bluetooth::Package& pkg){
+	if(pWheelbase){
+		ResponseEncoders(
+				pWheelbase->EncoderGetCount(0),
+				pWheelbase->EncoderGetCount(1),
+				pWheelbase->EncoderGetCount(2)
+				);
 	}
 }

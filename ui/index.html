@@ -6,36 +6,29 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.16/vue.js"></script>
   </head>
   <body>
-    <h1>Hello World!</h1>
-    <!-- All of the Node.js APIs are available in this renderer process. -->
-    We are using Node.js <script>document.write(process.versions.node)</script>,
-    Chromium <script>document.write(process.versions.chrome)</script>,
-    Electron <script>document.write(process.versions.electron)</script>,
-    and Serialport <script>document.write(require('serialport/package').version)</script>.
-
-
-    <div id="error"></div>
-    <div id="ports"></div>
     <div id="app">
-      {{str}}
-      {{JSON.stringify(ports)}}
-      <button v-for="port in ports" @click="()=>connect(port.comName)">{{port.comName}}</button>
-      <button @click="()=>write('y')">send</button>
-      <hi></hi>
-      <div>
-        <canvas id="canvas" @click="movecar" width="500px" height="500px" border="1px solid">
-  
-        </canvas>
+      <div :style="`visibility: ${(!comm?'unset':'hidden')}`">
+        <h3>Please connect</h3>
+        <button v-for="port in ports" @click="()=>connect(port.comName)">{{port.comName}}</button>
       </div>
-      <p><input v-model="motor[0]"><button @click="()=>setMotorById(0)">send0</button></p>
-      <p><input v-model="motor[1]"><button @click="()=>setMotorById(1)">send1</button></p>
-      <p><input v-model="motor[2]"><button @click="()=>setMotorById(2)">send2</button></p>
+      <div :style="`visibility: ${(!!comm?'unset':'hidden')}`">
+        <button @click="()=>write('y')">send</button>
+        <p><input v-model="motor[0]"><button @click="()=>setMotorById(0)">send0</button></p>
+        <p><input v-model="motor[1]"><button @click="()=>setMotorById(1)">send1</button></p>
+        <p><input v-model="motor[2]"><button @click="()=>setMotorById(2)">send2</button></p>
+        <div>
+          <canvas id="canvas" @click="movecar" width="500px" height="500px" border="1px solid">
+    
+          </canvas>
+        </div>
+      </div>
+      <textarea>{{logs}}</textarea>
     </div>
   </body>
 
   <script>
     // You can also require other files to run in this process
-    require('./renderer.js')
+    // require('./renderer.js')
     require('./app.js')
   </script>
 </html>
