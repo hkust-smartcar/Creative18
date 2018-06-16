@@ -7,6 +7,8 @@ const BrowserWindow = electron.BrowserWindow
 const path = require('path')
 const url = require('url')
 
+// require('electron-reload')(__dirname)
+
 require('electron-reload')(__dirname, {
   // Note that the path to electron may vary according to the main file
   electron: require(`${__dirname}/node_modules/electron`)
@@ -26,6 +28,12 @@ function createWindow () {
     protocol: 'file:',
     slashes: true
   }))
+
+  try{
+    BrowserWindow.addDevToolsExtension(`C:\\Users\\dipsy\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Extensions\\nhdogjmejiglipccpnnnanhbledajbpd\\4.1.4_0`)
+  }catch(e){
+    console.log(e)
+  }
 
   // Open the DevTools.
   mainWindow.webContents.openDevTools()

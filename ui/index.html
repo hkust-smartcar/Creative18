@@ -13,7 +13,6 @@
     Electron <script>document.write(process.versions.electron)</script>,
     and Serialport <script>document.write(require('serialport/package').version)</script>.
 
-hi?
 
     <div id="error"></div>
     <div id="ports"></div>
@@ -22,6 +21,15 @@ hi?
       {{JSON.stringify(ports)}}
       <button v-for="port in ports" @click="()=>connect(port.comName)">{{port.comName}}</button>
       <button @click="()=>write('y')">send</button>
+      <hi></hi>
+      <div>
+        <canvas id="canvas" @click="movecar" width="500px" height="500px" border="1px solid">
+  
+        </canvas>
+      </div>
+      <p><input v-model="motor[0]"><button @click="()=>setMotorById(0)">send0</button></p>
+      <p><input v-model="motor[1]"><button @click="()=>setMotorById(1)">send1</button></p>
+      <p><input v-model="motor[2]"><button @click="()=>setMotorById(2)">send2</button></p>
     </div>
   </body>
 
