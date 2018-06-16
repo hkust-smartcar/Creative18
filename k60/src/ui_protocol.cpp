@@ -54,7 +54,9 @@ void UiProtocol::RequestMoveHandler(const Bluetooth::Package& pkg){
 	int16_t speedx, speedy;
 	memcpy(&speedx, &*pkg.data.begin(),2);
 	memcpy(&speedy, &*pkg.data.begin()+2,2);
-
+	if(pWheelbase){
+		pWheelbase->SetSpeedLocalXY(speedx, speedy);
+	}
 }
 
 void UiProtocol::RequestSetMotorByIdHandler(const Bluetooth::Package& pkg){

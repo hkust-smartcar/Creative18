@@ -29,6 +29,8 @@ public:
 	void MotorSetPower(uint8_t id, int16_t speed);
 	int32_t EncoderGetCount(uint8_t id);
 
+	void SetSpeedLocalXY(int16_t speedx, int16_t speedy);
+
 	void UpdateEncoderToRemote();
 
 	void Test1();

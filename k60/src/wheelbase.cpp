@@ -59,6 +59,10 @@ int32_t Wheelbase::EncoderGetCount(uint8_t id){
 	return 0;
 }
 
+void Wheelbase::SetSpeedLocalXY(int16_t speedx, int16_t speedy){
+	//TODO: set the three motor correspondingly
+}
+
 void Wheelbase::UpdateEncoderToRemote(){
 	int32_t count = EncoderGetCount(0);
 	if(count)pProtocol->ResponseEncoder(count);

@@ -156,8 +156,8 @@ int main(void)
 
 
 //	test();
-//	master();
-	slave();
+	master();
+//	slave();
 
 
 	return 0;
