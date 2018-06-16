@@ -17,7 +17,7 @@ Test::~Test(){
 
 void Test::test1(){
 	pProtocol->RequestSetMotor(123);
-	pProtocol->RequestEncoder();
+	pProtocol->AwaitRequestEncoder(&writer);
 }
 
 void Test::test2(){

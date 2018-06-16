@@ -76,7 +76,7 @@ void Protocol::RequestEncoderHandler(const Bluetooth::Package& pkg){
 //		test->writer.WriteString(c);
 	}
 	if(pWheelbase){
-		ResponseEncoder(encoder_total+=pWheelbase->EncoderGetCount(0));
+		ResponseEncoder(pWheelbase->EncoderGetCount(0));
 	} else {
 		ResponseEncoder(0);
 	}
@@ -84,7 +84,8 @@ void Protocol::RequestEncoderHandler(const Bluetooth::Package& pkg){
 
 void Protocol::ResponseEncoderHandler(const Bluetooth::Package& pkg){
 	waiting_encoder = false;
-	memcpy(&encoder_total, &*pkg.data.begin(),4);
+	memcpy(&encoder_count, &*pkg.data.begin(),4);
+	encoder_totoal_count+=encoder_count;
 	if(test != nullptr){
 //		char c[20];
 //		sprintf(c,"%d obt en %d", filteredRecievedPackageSumByType[pkg.type], count);
@@ -94,13 +95,15 @@ void Protocol::ResponseEncoderHandler(const Bluetooth::Package& pkg){
 	}
 }
 
-int32_t Protocol::AwaitRequestEncoder(){
+int32_t Protocol::AwaitRequestEncoder(LcdTypewriter* pwriter){
 	RequestEncoder();
 	waiting_encoder = true;
 	while(waiting_encoder){
+		char ch = '0'+waiting_encoder;
+		if(pwriter)pwriter->WriteBuffer(&ch,1);
 		if(waiting_encoder == false){
 			break;
 		}
 	}
-	return encoder_total;
+	return encoder_count;
 }

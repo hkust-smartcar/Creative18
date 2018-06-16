@@ -49,12 +49,12 @@ int32_t Wheelbase::EncoderGetCount(uint8_t id){
 		return encoder1.GetCount();
 	case 2:
 //		pProtocol->RequestEncoder();
-		int32_t count = pProtocol->GetEncoderTotolCount() - prev_encoder2_count;
-		prev_encoder2_count = pProtocol->GetEncoderTotolCount();
+//		int32_t count = pProtocol->GetEncoderTotolCount() - prev_encoder2_count;
+//		prev_encoder2_count = pProtocol->GetEncoderTotolCount();
 //		int32_t newCount = pProtocol->AwaitRequestEncoder();
 //		int32_t count = newCount - prev_encoder2_count;
 //		prev_encoder2_count = newCount;
-		return count;
+		return pProtocol->AwaitRequestEncoder();
 	}
 	return 0;
 }
@@ -64,6 +64,10 @@ void Wheelbase::UpdateEncoderToRemote(){
 	if(count)pProtocol->ResponseEncoder(count);
 }
 
+void Wheelbase::Test1(){
+	pProtocol->RequestSetMotor(123);
+	pProtocol->RequestEncoder();
+}
 //St7735r::Config Wheelbase::GetLcdConfig(){
 //	St7735r::Config lcd_config;
 //	lcd_config.orientation = 0;

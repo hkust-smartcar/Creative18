@@ -122,7 +122,6 @@ void slave(){
 			led0.Switch();
 			nextRender+=250;
 		}
-		wheelbase.UpdateEncoderToRemote();
 	}
 }
 
@@ -157,8 +156,8 @@ int main(void)
 
 
 //	test();
-	master();
-//	slave();
+//	master();
+	slave();
 
 
 	return 0;

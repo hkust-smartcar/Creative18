@@ -10,11 +10,14 @@
 
 #include <string>
 #include <map>
-#include "libsc/k60/touchscreen_lcd.h"
+
+#include "libsc/lcd_typewriter.h"
 
 #include "bluetooth.h"
 #include "test.h"
 #include "wheelbase.h"
+
+using namespace libsc;
 
 class Test;
 
@@ -27,15 +30,15 @@ public:
 	Test* test;
 	Wheelbase* pWheelbase;
 
-	Protocol():m_bt(1,1), test(nullptr){
+	Protocol():m_bt(1,1), test(nullptr), pWheelbase(nullptr){
 		Init();
 	}
 
-	Protocol(Test* t):m_bt(1,1), test(t){
+	Protocol(Test* t):m_bt(1,1), test(t), pWheelbase(nullptr){
 		Init();
 	}
 
-	Protocol(Wheelbase* wb):m_bt(1,1), pWheelbase(wb){
+	Protocol(Wheelbase* wb):m_bt(1,1), test(nullptr), pWheelbase(wb){
 		Init();
 	}
 
@@ -64,7 +67,7 @@ public:
 	//when requested, use the response encoder function
 	uint8_t RequestEncoder();
 	uint8_t ResponseEncoder(int32_t count);
-	int32_t AwaitRequestEncoder();
+	int32_t AwaitRequestEncoder(LcdTypewriter* t = nullptr);
 
 	void Handler(const Bluetooth::Package& pkg);
 
@@ -72,14 +75,16 @@ public:
 	void RequestEncoderHandler(const Bluetooth::Package& pkg);
 	void ResponseEncoderHandler(const Bluetooth::Package& pkg);
 
-	int32_t GetEncoderTotolCount(){return encoder_total;}
+	int32_t GetEncoderTotolCount(){return encoder_totoal_count;}
+	int32_t GetEncoderCount(){return encoder_count;}
 
 private:
 	bool recievedPackageId[10];
 	uint8_t filteredRecievedPackageSumByType[10];
 
 	bool waiting_encoder = false;
-	int32_t encoder_total = 0;
+	int32_t encoder_count = 0;
+	int32_t encoder_totoal_count = 0;
 };
 
 

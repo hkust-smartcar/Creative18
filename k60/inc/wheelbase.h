@@ -31,6 +31,9 @@ public:
 
 	void UpdateEncoderToRemote();
 
+	void Test1();
+
+	bool flag = false;
 private:
 
 	Protocol* pProtocol;
@@ -61,6 +64,7 @@ private:
 
 	friend Protocol;
 	friend UiProtocol;
+
 };
 
 
