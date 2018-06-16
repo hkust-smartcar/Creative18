@@ -14,13 +14,16 @@ var app = new Vue({
     canvas: null,
     ctx: null,
     motor: [0,0,0],
+    encoder: [0,0,0],
     logs:''
   },
   methods: {
     log: str => app.logs+=str+'\n',
+
     connect: portName => {
-      app.comm = new Comm(portName, app)
+      app.comm = new Comm(portName, app, app.handler)
     },
+
     movecar: event => {
       let [x, y] = [event.clientX - 250, event.clientY - 250]
       app.ctx.fillStyle = "#FFFFFF"
@@ -45,6 +48,34 @@ var app = new Vue({
         data
       })
       pkgid%=256
+    },
+
+    getEncoders: () => {
+      app.comm.sendPackageImmediate({
+        id: pkgid++,
+        type: Comm.pkg_type.kRequestEncoders,
+        data: Buffer.alloc(0)
+      })
+    },
+
+    handler: pkg => {
+      switch(pkg.type){
+        case Comm.pkg_type.kResponseEncoderById:
+          const id = pkg.data.readUInt8(0)
+          const count = pkg.data.readInt32LE(1)
+          console.log(id, count)
+          app.encoder[id] = count
+          break
+        case Comm.pkg_type.kResponseEncoders:
+          app.encoder = [
+            pkg.data.readInt32LE(0),
+            pkg.data.readInt32LE(4),
+            pkg.data.readInt32LE(8)
+          ]
+          console.log(app.encoder)
+          break
+
+      }
     }
   }
 })
