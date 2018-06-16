@@ -17,14 +17,14 @@ void Protocol::Handler(const Bluetooth::Package& pkg){
 //		test->lcd.SetRegion({0,100,100,20});
 //		test->writer.WriteString(c);
 	}
-	if(pkg.type != Bluetooth::PkgType::kACK){
-		if(recievedPackageId[pkg.id%10]){
-			return;
-		}
-		recievedPackageId[pkg.id%10] = true;
-		recievedPackageId[(pkg.id+5)%10] = false;
-	}
-	filteredRecievedPackageSumByType[pkg.type]++;
+//	if(pkg.type != Bluetooth::PkgType::kACK){
+//		if(recievedPackageId[pkg.id%10]){
+//			return;
+//		}
+//		recievedPackageId[pkg.id%10] = true;
+//		recievedPackageId[(pkg.id+5)%10] = false;
+//	}
+//	filteredRecievedPackageSumByType[pkg.type]++;
 	switch(pkg.type){
 	case Bluetooth::PkgType::kRequestSetMotor:
 		RequestSetMotorHandler(pkg);
@@ -48,9 +48,9 @@ uint8_t Protocol::RequestEncoder(){
 	return m_bt.QueuePackage({Bluetooth::PkgType::kRequestEncoder,0,{}});
 }
 
-uint8_t Protocol::ResponseEncoder(uint16_t count){
-	vector<Byte> data(2,0);
-	memcpy(&*data.begin(),&count,2);
+uint8_t Protocol::ResponseEncoder(int32_t count){
+	vector<Byte> data(4,0);
+	memcpy(&*data.begin(),&count,4);
 	return m_bt.QueuePackage({Bluetooth::PkgType::kResponseEncoder,0,data});
 }
 
@@ -63,6 +63,9 @@ void Protocol::RequestSetMotorHandler(const Bluetooth::Package& pkg){
 //		test->lcd.SetRegion({0,0,100,20});
 //		test->writer.WriteString(c);
 	}
+	if(pWheelbase){
+		pWheelbase->MotorSetPower(0,speed);
+	}
 }
 
 void Protocol::RequestEncoderHandler(const Bluetooth::Package& pkg){
@@ -72,12 +75,16 @@ void Protocol::RequestEncoderHandler(const Bluetooth::Package& pkg){
 //		test->lcd.SetRegion({0,20,100,20});
 //		test->writer.WriteString(c);
 	}
-	ResponseEncoder(7766);
+	if(pWheelbase){
+		ResponseEncoder(encoder_total+=pWheelbase->EncoderGetCount(0));
+	} else {
+		ResponseEncoder(0);
+	}
 }
 
 void Protocol::ResponseEncoderHandler(const Bluetooth::Package& pkg){
-	uint16_t count;
-	memcpy(&count, &*pkg.data.begin(),2);
+	waiting_encoder = false;
+	memcpy(&encoder_total, &*pkg.data.begin(),4);
 	if(test != nullptr){
 //		char c[20];
 //		sprintf(c,"%d obt en %d", filteredRecievedPackageSumByType[pkg.type], count);
@@ -85,4 +92,15 @@ void Protocol::ResponseEncoderHandler(const Bluetooth::Package& pkg){
 //		test->writer.WriteString(c);
 		test->flag = true;
 	}
+}
+
+int32_t Protocol::AwaitRequestEncoder(){
+	RequestEncoder();
+	waiting_encoder = true;
+	while(waiting_encoder){
+		if(waiting_encoder == false){
+			break;
+		}
+	}
+	return encoder_total;
 }

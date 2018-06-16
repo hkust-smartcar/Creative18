@@ -22,6 +22,7 @@ public:
 	~Test();
 	void test1();
 	void test2();
+
 	bool flag = false;
 private:
 	Protocol* pProtocol;

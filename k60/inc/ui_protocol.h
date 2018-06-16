@@ -1,12 +1,12 @@
 /*
- * protocol.h
+ * ui_protocol.h
  *
  *  Created on: Mar 6, 2018
  *      Author: dipsy
  */
 
-#ifndef INC_PROTOCOL_H_
-#define INC_PROTOCOL_H_
+#ifndef INC_UIPROTOCOL_H_
+#define INC_UIPROTOCOL_H_
 
 #include <string>
 #include <map>
@@ -20,22 +20,22 @@ class Test;
 
 class Wheelbase;
 
-class Protocol{
+class UiProtocol{
 public:
 
 	Bluetooth m_bt;
 	Test* test;
 	Wheelbase* pWheelbase;
 
-	Protocol():m_bt(1,1), test(nullptr){
+	UiProtocol():m_bt(0,2), test(nullptr){
 		Init();
 	}
 
-	Protocol(Test* t):m_bt(1,1), test(t){
+	UiProtocol(Test* t):m_bt(0,2), test(t){
 		Init();
 	}
 
-	Protocol(Wheelbase* wb):m_bt(1,1), pWheelbase(wb){
+	UiProtocol(Wheelbase* wb):m_bt(0,2), pWheelbase(wb){
 		Init();
 	}
 
@@ -58,30 +58,22 @@ public:
 	 * probably previous same request have not received
 	 */
 
-	uint8_t RequestSetMotor(int16_t speed);
+	uint8_t RequestMove(int16_t speedx, int16_t speedy);
 
 	//request encoder using the request encoder, the feedback will provided by ResponseEncoderHandler
 	//when requested, use the response encoder function
-	uint8_t RequestEncoder();
-	uint8_t ResponseEncoder(int32_t count);
-	int32_t AwaitRequestEncoder();
+	uint8_t RequestSetMotorById(uint8_t id, int16_t speed);
 
 	void Handler(const Bluetooth::Package& pkg);
 
-	void RequestSetMotorHandler(const Bluetooth::Package& pkg);
-	void RequestEncoderHandler(const Bluetooth::Package& pkg);
-	void ResponseEncoderHandler(const Bluetooth::Package& pkg);
-
-	int32_t GetEncoderTotolCount(){return encoder_total;}
+	void RequestMoveHandler(const Bluetooth::Package& pkg);
+	void RequestSetMotorByIdHandler(const Bluetooth::Package& pkg);
 
 private:
 	bool recievedPackageId[10];
 	uint8_t filteredRecievedPackageSumByType[10];
-
-	bool waiting_encoder = false;
-	int32_t encoder_total = 0;
 };
 
 
 
-#endif /* INC_PROTOCOL_H_ */
+#endif /* INC_UIPROTOCOL_H_ */
