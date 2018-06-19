@@ -43,12 +43,22 @@ var app = new Vue({
     },
 
     movecar: event => {
-      let [x, y] = [event.clientX - 250, event.clientY - 250]
+      console.log(event)
+      let [x, y] = [event.offsetX - 250,  250 - event.offsetY]
       app.ctx.fillStyle = "#FFFFFF"
       app.ctx.fillRect(0,0,100,100)
       app.ctx.fillStyle = "#000000"
       app.ctx.fillText(`( ${x}, ${y} )`,0,40)
       console.log(x,y)
+      const data = Buffer.alloc(4)
+      data.writeInt16LE(x,0)
+      data.writeInt16LE(y,0)
+      app.comm.sendPackageImmediate({
+        id:plgid++,
+        type:Comm.pkg_type.kRequestMove,
+        data
+      })
+      pkgid%=256
     },
     
     setMotorById: motor_id=>{
