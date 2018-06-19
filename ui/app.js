@@ -4,6 +4,21 @@ const Comm = require('./comm')
 
 pkgid = 0
 
+const drawGraph = (app)=>{
+  let c = document.getElementById('graph').getContext("2d")
+  c.fillStyle = '#ffffff'
+  c.fillRect(0,0,500,500)
+  app.encoders_hist.forEach((snapshot,k)=>{
+    snapshot.forEach((pos,i)=>{
+      c.fillStyle = ['#ff0000','#00ff00','#0000ff'][i]
+      c.fillRect(500-k*5,pos+250,5,5)
+    })
+  })
+  while(app.encoders_hist.length>100){
+    app.encoders_hist.shift()
+  }
+}
+
 var app = new Vue({
   el: '#app',
   data: {
@@ -14,7 +29,10 @@ var app = new Vue({
     canvas: null,
     ctx: null,
     motor: [0,0,0],
-    encoder: [0,0,0],
+    encoders: [0,0,0],
+    encoders_hist: [],
+    encoder_interval_crawler: null,
+    craw_interval: 250,
     logs:''
   },
   methods: {
@@ -56,6 +74,15 @@ var app = new Vue({
         type: Comm.pkg_type.kRequestEncoders,
         data: Buffer.alloc(0)
       })
+      pkgid%=256
+    },
+
+    startEncodersIntervalGet: ()=>{
+      app.encoder_interval_crawler = setInterval(app.getEncoders,app.craw_interval)
+    },
+
+    stopEncodersIntervalGet: ()=>{
+      clearInterval(app.encoder_interval_crawler)
     },
 
     handler: pkg => {
@@ -64,15 +91,18 @@ var app = new Vue({
           const id = pkg.data.readUInt8(0)
           const count = pkg.data.readInt32LE(1)
           console.log(id, count)
-          app.encoder[id] = count
+          app.encoders[id] = count
           break
         case Comm.pkg_type.kResponseEncoders:
-          app.encoder = [
+          const encoders = [
             pkg.data.readInt32LE(0),
             pkg.data.readInt32LE(4),
             pkg.data.readInt32LE(8)
           ]
-          console.log(app.encoder)
+          app.encoders_hist.push(encoders.map((e,k)=>e-app.encoders[k]))
+          app.encoders = encoders
+          console.log(app.encoders)
+          drawGraph(app)
           break
 
       }
