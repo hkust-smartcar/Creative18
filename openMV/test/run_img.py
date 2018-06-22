@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Fri Jun 22 14:56:59 2018
+Created on Fri Jun 22 21:10:31 2018
 
 @author: dipsy
 """
@@ -9,7 +9,7 @@ from PIL import Image
 from jp import *
 from pj import *
 
-path = "test2.jpg"
+path = "Capture2.jpg"
 jpgfile = Image.open(path)
 
 oldsize = (160,120)
@@ -29,18 +29,4 @@ for x in range(fixedsize[0]):
             x
             
 fixedfile.show()
-fixedfile.save("fixed.jpg")
-
-path = "fixed.jpg"
-jpgfile = Image.open(path)
-
-ofile = Image.new('RGB',oldsize)
-
-for x in range(oldsize[0]):
-    for y in range(oldsize[1]):
-        try:
-            ofile.putpixel((x,y),jpgfile.getpixel(pm2(jp,(x,y))))
-        except:
-            x
-            
-ofile.show()
+fixedfile.save(path+"_fixed.jpg")

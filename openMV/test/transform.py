@@ -26,20 +26,18 @@ brief: generate a static array which map newsize to oldsize
 param: coord in newsize
 return: coord in oldsize
 """
-def generate(h):
-    f = open("pj.py","w")
-    f2 = open("../pj.py","w")
-    m = []
-    for x in range(newsize[0]):
-        m.append([])
-        for y in range(newsize[1]):
-            m[x].append(pm2(h,(x,y)))
-    pyContent = "pj = "+json.dumps(m).replace("[","(").replace("]",")")
+def generate(h,name):
+    f = open(name+".py","w")
+    f2 = open("../"+name+".py","w")
+    h=list(h)
+    h[0] = list(h[0])
+    h[1] = list(h[1])
+    h[2] = list(h[2])
+    pyContent = name+" = "+json.dumps(list(h)).replace("[","(").replace("]",")")
     f.write(pyContent)
     f2.write(pyContent)
     f.close()
     f2.close()
-
 
 """
 brief: given arrays of source points and target points
@@ -154,4 +152,5 @@ for x in range(newsize[0]):
             #print ((x,y),p,e)
             #raise
 newfile.show()
-generate(pj_)
+generate(pj_,"pj")
+generate(pj,"jp")
