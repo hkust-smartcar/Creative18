@@ -6,15 +6,43 @@ Created on Mon Jun 18 21:39:57 2018
 """
 import numpy as np
 from PIL import Image
+import json
 
+
+newsize = (280,240)
+src = [[55,79], [107,81], [102,51], [62,50]]
+tgt = [[120,200],[160,200],[160,160],[120,160]]
+
+"""
 pj = np.squeeze(np.asarray(np.matrix('''
                        1 0 0;
                        0 1 0;
                        0 0 1
                        ''')))
+"""
 
 """
-breif: given arrays of source points and target points
+brief: generate a static array which map newsize to oldsize
+param: coord in newsize
+return: coord in oldsize
+"""
+def generate(h):
+    f = open("pj.py","w")
+    f2 = open("../pj.py","w")
+    m = []
+    for x in range(newsize[0]):
+        m.append([])
+        for y in range(newsize[1]):
+            m[x].append(pm2(h,(x,y)))
+    pyContent = "pj = "+json.dumps(m).replace("[","(").replace("]",")")
+    f.write(pyContent)
+    f2.write(pyContent)
+    f.close()
+    f2.close()
+
+
+"""
+brief: given arrays of source points and target points
 return a projection matrix that map source points to target points
 link: https://stackoverflow.com/questions/35819142/calculate-a-2d-homogeneous-perspective-transformation-matrix-from-4-points-in-ma
 link: https://math.stackexchange.com/questions/96662/augmented-reality-transformation-matrix-optimization
@@ -66,8 +94,8 @@ def projmap (pj,src):
 
 def pm2(h,s):
     [x,y]=s
-    return [int((h[0][0]*x+h[0][1]*y+h[0][2])/(h[2][0]*x+h[2][1]*y+h[2][2])),\
-            int((h[1][0]*x+h[1][1]*y+h[1][2])/(h[2][0]*x+h[2][1]*y+h[2][2]))]
+    return (int((h[0][0]*x+h[0][1]*y+h[0][2])/(h[2][0]*x+h[2][1]*y+h[2][2])),\
+            int((h[1][0]*x+h[1][1]*y+h[1][2])/(h[2][0]*x+h[2][1]*y+h[2][2])))
 
 """
 link: link: https://math.stackexchange.com/questions/96662/augmented-reality-transformation-matrix-optimization
@@ -96,9 +124,6 @@ def getProjMatrix2(s,t):
     p = [[x[0],x[1],x[2]],[x[3],x[4],x[5]],[x[6],x[7],1]]
     return p
 
-src = [[0, 0], [350, 0], [350, 263], [0, 263]]
-tgt = [[200,200],[300,400],[400,500],[600,0]]
-
 pj = getProjMatrix2(src,tgt)
 print(pm2(pj,[0,0]))
 print(pm2(pj,[0,1]))
@@ -106,19 +131,27 @@ print(pm2(pj,[1,1]))
 print(pm2(pj,[1,0]))
 pj_ = np.linalg.inv(pj)
 
-path = "TransformationsSourceBitmap.jpg"
+path = "test2.jpg"
 jpgfile = Image.open(path)
 print(jpgfile.bits, jpgfile.size, jpgfile.format)
-newsize = pm2(pj,jpgfile.size)
 print('new size',newsize)
 newfile = Image.new('RGB',newsize)
-for x in range(jpgfile.size[0]):
-    for y in range(jpgfile.size[1]):
+for x in range(newsize[0]):
+    for y in range(newsize[1]):
         try:
-            p = pm2(pj,(x,y))
-            newfile.putpixel(p,jpgfile.getpixel((x,y)))
-        except Exception as e:
+            p = pm2(pj_,(x,y))
+            newfile.putpixel((x,y),jpgfile.getpixel(p))
+        except:
             x
+        
+#for x in range(jpgfile.size[0]):
+#    for y in range(jpgfile.size[1]):
+#        try:
+#            p = pm2(pj,(x,y))
+#            newfile.putpixel(p,jpgfile.getpixel((x,y)))
+#        except Exception as e:
+#            x
             #print ((x,y),p,e)
             #raise
 newfile.show()
+generate(pj_)
