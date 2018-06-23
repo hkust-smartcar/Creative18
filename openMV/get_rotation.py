@@ -1,9 +1,6 @@
 import sensor, image, time
-from util import dist
+from util import dist, mapToImage, mapToWorld
 from math import acos
-from pj import *
-from jp import *
-from pm import *
 
 def vote(votes,min_dx, threshold):
     for v in votes:
@@ -24,15 +21,17 @@ def getHighestVote(votes):
 
 def get_rotation(img,rects, threshold):
     votes = {}
+    dist_votes = {}
     for rk, r in enumerate(rects):
         c = r.corners()
         min_dx = 10000
         for i, p1 in enumerate(c):
-            p1 = pm(jp,p1)
-            p2 = pm(jp,c[i-1])
+            p1 = mapToWorld(p1)
+            p2 = mapToWorld(c[i-1])
             # if(abs(dist(p1,p2)-26)>threshold):
             #     print(p1,p2,dist(p1,p2))
             #     continue
+            vote(dist_votes,dist(p1,p2), threshold)
             img.draw_circle(p1[0],p1[1],5,color=(255,0,0))
             if p1[1] > p2[1]:
                 p1, p2 = p2, p1
@@ -40,4 +39,4 @@ def get_rotation(img,rects, threshold):
             if(abs(dx)<abs(min_dx)):
                 min_dx = dx
         vote(votes,min_dx, threshold)
-    return getHighestVote(votes)
+    return getHighestVote(votes),getHighestVote(dist_votes)
