@@ -37,6 +37,10 @@ while(True):
         for i, p in enumerate(c):
             p_ = c[i-1]
             img.draw_line(p[0],p[1],p_[0],p_[1], 5, color=(255,0,0))
+    r = rects[0]
+    kpts = img.find_keypoints(r.rect())
+    print(kpts)
+    break
     #         #img.draw_circle(p[0], p[1], 5, color = (255, 0, 0))
     #corners = list(map(mapToWorld, corners))
     #print(len(corners),end=" , ")
