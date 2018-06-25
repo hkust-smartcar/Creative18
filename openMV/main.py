@@ -3,8 +3,9 @@
 import sensor, image, time
 from fuse_corners import fuse_corners
 from find_num import find_num
-from grid import get_rotation, get_length, getGoodRects
-from util import mapToWorld, mapToImage
+from grid import get_rotation, get_length, getGoodRects, getGlobalRotation
+from util import mapToWorld, mapToImage, deg
+from math import sin,cos
 
 sensor.reset()
 sensor.set_pixformat(sensor.RGB565) # grayscale is faster (160x120 max on OpenMV-M7)
@@ -20,6 +21,9 @@ corners = []
 
 id=0
 
+gRotation = 0
+lRotation = 0
+
 while(True):
     clock.tick()
     equations = []
@@ -30,15 +34,23 @@ while(True):
     #try:
     length = get_length(img,rects,2)
     print(length)
-    goodRects = getGoodRects(rects, length, 15)
+    goodRects = getGoodRects(rects, length, 10)
     dx, theta = get_rotation(img,goodRects,length,2)
+    gRotation = getGlobalRotation(gRotation,lRotation,theta)
+    lRotation = theta
+    print('deg',deg(gRotation),'theta',theta)
     #except Exception as e:
         #print(e)
         #continue
-    print(dx,length,theta)
+    #print(dx,length,theta)
     [x0,y0] = mapToImage([140,240])
     [x1,y1] = mapToImage([140-dx,240-length])
     img.draw_line(x0,y0,x1,y1, color=(255,0,0))
+
+    [x0,y0] = [70,60]
+    [x1,y1] = [70-int(length*cos(gRotation)),60-int(length*sin(gRotation))]
+    img.draw_line(x0,y0,x1,y1, color=(0,255,0))
+
     for k,r in enumerate(goodRects):
         c = r.corners()
         corners += c

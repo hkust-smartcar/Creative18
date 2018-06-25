@@ -1,6 +1,6 @@
 import sensor, image, time
-from util import dist, mapToImage, mapToWorld
-from math import acos
+from util import dist, mapToImage, mapToWorld, sgn
+from math import acos, pi
 
 def vote(votes,min_dx, threshold):
     for v in votes:
@@ -69,8 +69,21 @@ def getGoodRects(rects, length, threshold):
             goodRects.append(rect)
     return goodRects
 
-
-
+"""
+brief: given previous global and local rotation and current local rotation
+return: current global rotation
+unit: radian
+"""
+def getGlobalRotation(prevg, prevl, currl):
+    currg = prevg- prevl + currl
+    #if (True or abs(prevl) > pi/4 and abs(currl) > pi/4):
+    if(sgn(prevl) == 1 and sgn(currl) == -1):
+        #prev is positive, current is negative
+        currg += pi/2
+    elif(sgn(prevl) == -1 and sgn(currl) == 1):
+        #prev is negative, current is positive
+        currg -= pi/2
+    return currg
 
 
 

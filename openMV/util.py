@@ -1,4 +1,4 @@
-from math import sqrt
+from math import sqrt, pi
 from pj import *
 from jp import *
 
@@ -34,3 +34,21 @@ brief: given a world coordinate, return its image buffer coordinate
 """
 def mapToImage(s):
     return pm(pj,s)
+
+"""
+return: sign of number -1: negative
+                        0: zero
+                        1: positive
+"""
+def sgn(num):
+    if(num<0):
+        return -1
+    if(num>0):
+        return 1
+    return 0
+
+"""
+given an angle in radian, return degree
+"""
+def deg(rad):
+    return rad*360/(pi*2)
