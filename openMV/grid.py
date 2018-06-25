@@ -5,12 +5,15 @@ from util import dist, mapToImage, mapToWorld, sgn
 from math import acos, pi, sin, cos
 
 
-def vote(votes, min_dx, threshold):
+def vote(votes, new_vote, threshold):
     for v in votes:
-        if(abs(v-min_dx) < threshold):
-            votes[v] += 1
+        if(abs(v-new_vote) < threshold):
+            cnt = votes[v]
+            votes.pop(v,None)
+            nv = (cnt*v + new_vote)/(cnt+1)
+            votes[nv] = cnt+1
             return
-    votes[min_dx] = 1
+    votes[new_vote] = 1
 
 
 def getHighestVote(votes, default):

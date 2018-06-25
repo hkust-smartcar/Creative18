@@ -5,12 +5,12 @@ import image
 import time
 from fuse_corners import fuse_corners
 from find_num import find_num
-from grid import get_rotation,
-get_length,
-getGoodRects,
-getGlobalRotation,
-getGlobalRotationWithDirection,
-getRotateCorners,
+from grid import get_rotation,\
+get_length,\
+getGoodRects,\
+getGlobalRotation,\
+getGlobalRotationWithDirection,\
+getRotateCorners,\
 getLocalDisplacement
 from util import mapToWorld, mapToImage, deg
 from math import sin, cos
