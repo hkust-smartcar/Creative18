@@ -1,8 +1,9 @@
 # main - By: dipsy - Mon Jun 18 2018
 
 import sensor, image, time
-from fuse_corners import *
-from get_rotation import get_rotation
+from fuse_corners import fuse_corners
+from find_num import find_num
+from grid import get_rotation, get_length, getGoodRects
 from util import mapToWorld, mapToImage
 
 sensor.reset()
@@ -26,21 +27,31 @@ while(True):
     img = sensor.snapshot()
 
     rects = img.find_rects(threshold = 25000)
-    dx,l = get_rotation(img,rects,5)
-    #print(dx,l)
+    #try:
+    length = get_length(img,rects,2)
+    print(length)
+    goodRects = getGoodRects(rects, length, 15)
+    dx, theta = get_rotation(img,goodRects,length,2)
+    #except Exception as e:
+        #print(e)
+        #continue
+    print(dx,length,theta)
     [x0,y0] = mapToImage([140,240])
-    [x1,y1] = mapToImage([140-dx,240-l])
+    [x1,y1] = mapToImage([140-dx,240-length])
     img.draw_line(x0,y0,x1,y1, color=(255,0,0))
-    for k,r in enumerate(rects):
+    for k,r in enumerate(goodRects):
         c = r.corners()
         corners += c
         for i, p in enumerate(c):
             p_ = c[i-1]
             img.draw_line(p[0],p[1],p_[0],p_[1], 5, color=(255,0,0))
-    r = rects[0]
-    kpts = img.find_keypoints(r.rect())
-    print(kpts)
-    break
+    # goodRects = getGoodRects(rects, length, 10)
+    # if len(goodRects):
+    #     r = goodRects[0]
+    #     img.draw_rectangle(r.rect(),color=(0,255,0))
+    #     find_num(img,r,theta,length)
+
+
     #         #img.draw_circle(p[0], p[1], 5, color = (255, 0, 0))
     #corners = list(map(mapToWorld, corners))
     #print(len(corners),end=" , ")
