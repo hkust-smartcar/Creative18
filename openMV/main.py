@@ -11,7 +11,8 @@ getGoodRects,\
 getGlobalRotation,\
 getGlobalRotationWithDirection,\
 getRotateCorners,\
-getLocalDisplacement
+getLocalDisplacement,\
+getMergedRotatedCornerLength
 from util import mapToWorld, mapToImage, deg
 from math import sin, cos
 
@@ -37,18 +38,24 @@ while(True):
     clock.tick()
     equations = []
     corners = []
-    img = sensor.snapshot()
+    img = sensor.snapshot()#.lens_corr(1.8,1)
 
     rects = img.find_rects(threshold=25000)
+    for k, r in enumerate(rects):
+        c = r.corners()
+        corners += c
+        for i, p in enumerate(c):
+            p_ = c[i-1]
+            img.draw_line(p[0], p[1], p_[0], p_[1], 5, color=(255, 255, 0))
     # try:
     length = get_length(img, rects, 2)
-    print(length)
+    print('p_length',length)
     goodRects = getGoodRects(rects, length, 10)
     dx, theta = get_rotation(img, goodRects, length, 2)
     gRotation = getGlobalRotation(gRotation, lRotation, theta)
     #gRotation = getGlobalRotationWithDirection(gRotation,lRotation,theta,False)
     lRotation = theta
-    print('deg', deg(gRotation), 'theta', theta)
+    # print('deg', deg(gRotation), 'theta', theta)
     # except Exception as e:
     # print(e)
     # continue
@@ -71,10 +78,16 @@ while(True):
     fixedCorners = list(map(mapToWorld, corners))
     fusedCorners = fuse_corners(fixedCorners, 5)
     rotatedCorners = getRotateCorners(img, fusedCorners, theta)
-    print(rotatedCorners)
+    # print(rotatedCorners)
     for p in rotatedCorners:
-        img.draw_circle((p[0]+140)//2, p[1]//2, 5, color=(0, 255, 0))
-    #print(getLocalDisplacement(img,rotatedCorners,))
+        img.draw_circle((p[0])//2, p[1]//2, 5, color=(0, 255, 0))
+    m_len = getMergedRotatedCornerLength(rotatedCorners)
+    m_len = 24
+    print('m_length',m_len)
+    if(m_len == 40):
+        print('corners',len(fusedCorners))
+        continue
+    print('local displacement',getLocalDisplacement(img,rotatedCorners,m_len))
     #localDisplacement = getLocalDisplacement(img, rotatedCorners)
     # goodRects = getGoodRects(rects, length, 10)
     # if len(goodRects):

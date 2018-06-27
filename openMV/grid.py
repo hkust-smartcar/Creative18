@@ -43,8 +43,8 @@ def get_rotation(img, rects, length, threshold):
                 min_dx = dx
         vote(votes, min_dx, threshold)
     d = getHighestVote(votes, d)
-    print(d)
-    print(length)
+    #print(d)
+    #print(length)
     return d, acos(d/length)-3.141592653/2
 
 
@@ -61,7 +61,7 @@ def get_length(img, rects, threshold):
                 break
             vote(dist_votes, local_length, threshold)
     length = getHighestVote(dist_votes, length)
-    print('length,', length)
+    #print('length,', length)
     return length
 
 
@@ -123,6 +123,24 @@ def getRotateCorners(img, fixedCorners, theta):
     rotatedCorners = list(map(lambda p: rotateTransform(p, co, si), fixedCorners))
     return rotatedCorners
 
+def getMergedRotatedCornerLength(corners):
+    x = []
+    y = []
+    for p in corners:
+        x.append(p[0])
+        y.append(p[1])
+    x=sorted(x)
+    y=sorted(y)
+    len_votes = {}
+    for k in range(len(x)-1):
+        d = abs(x[k+1]-x[k])
+        if(d>10):
+            vote(len_votes,d ,1)
+    for k in range(len(y)-1):
+        d = abs(y[k+1]-y[k])
+        if(d>10):
+            vote(len_votes, d,1)
+    return getHighestVote(len_votes,40)
 
 def getLocalDisplacement(img, rotatedCorners, length):
     x_votes = {}
