@@ -3,18 +3,20 @@
 import sensor
 import image
 import time
-from fuse_corners import fuse_corners
-from find_num import find_num
-from grid import get_rotation,\
-get_length,\
-getGoodRects,\
-getGlobalRotation,\
-getGlobalRotationWithDirection,\
-getRotateCorners,\
-getLocalDisplacement,\
-getMergedRotatedCornerLength
-from util import mapToWorld, mapToImage, deg
-from math import sin, cos
+# from fuse_corners import fuse_corners
+# from find_num import find_num
+# from grid import get_rotation,\
+# get_length,\
+# getGoodRects,\
+# getGlobalRotation,\
+# getGlobalRotationWithDirection,\
+# getRotateCorners,\
+# getLocalDisplacement,\
+# getMergedRotatedCornerLength
+# from util import mapToWorld, mapToImage, deg
+# from math import sin, cos
+
+#from comm import Comm
 
 sensor.reset()
 # grayscale is faster (160x120 max on OpenMV-M7)
@@ -33,6 +35,11 @@ id = 0
 
 gRotation = 0
 lRotation = 0
+
+comm = Comm(print)
+
+# while(True):
+#     comm.queuePackage(Package(0,1,b'1234'))
 
 while(True):
     clock.tick()
