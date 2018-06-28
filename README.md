@@ -33,13 +33,17 @@ kFeedGlobalTranslation = 0x0B
 #### B. Package structure
 
 ```
-|HEAD|LENGTH|PACKAGE_TYPE|DATA|...|CHECKSUM|END|
+|HEAD|LENGTH|PACKAGE_TYPE|PACKAGE_ID|DATA|...|CHECKSUM|END|
 ```
 
 where:
 `HEAD`	 	= `0xAA`
 
-`LENGTH` 	= length of whole package including header and end
+`LENGTH` 		= length of whole package including header and end
+
+`PACKAGE_TYPE` = package Type, determine the function of package
+
+`PACKAGE_ID` 	= unique id of package over a machine, for ACK packages
 
 `CHECKSUM` 	= sum of all bytes in package mod 256
 
