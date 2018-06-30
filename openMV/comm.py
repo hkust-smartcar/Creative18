@@ -1,6 +1,19 @@
 from pyb import UART
 import ustruct
 
+PKGTYPE = {
+            "kACK": 0x00,
+            "kRequestSetMotor": 0x01,
+            "kRequestEncoder": 0x02,
+            "kResponseEncoder": 0x03,
+            "kRequestMove": 0x04,
+            "kRequestSetMotorById": 0x05,
+            "kRequestEncoderById": 0x06,
+            "kResponseEncoderById": 0x07,
+            "kRequestEncoders": 0x08,
+            "kResponseEncoders": 0x09,
+            "kFeedCorners": 0xA0
+        }
 
 class Comm:
     def __init__(self, _handler):
@@ -13,18 +26,11 @@ class Comm:
         self.length = -1  # Check package length
         self.buf = []  # Buffer for incoming package
         self.handler = _handler
-        self.pkg_type = {
-            "kACK": 0x00,
-            "kRequestSetMotor": 0x01,
-            "kRequestEncoder": 0x02,
-            "kResponseEncoder": 0x03,
-            "kRequestMove": 0x04,
-            "kRequestSetMotorById": 0x05,
-            "kRequestEncoderById": 0x06,
-            "kResponseEncoderById": 0x07,
-            "kRequestEncoders": 0x08,
-            "kResponseEncoders": 0x09
-        }
+
+    def getPkgId(self):
+        t = self.historic_package_sum
+        self.historic_package_sum += 1
+        return t
 
     def queuePackage(self, pkg):
         pkg["id"] = (self.historic_package_sum+1) % 256
@@ -43,8 +49,9 @@ class Comm:
         for b in data:
             cs += b
         cs %= 256
+        #print("pkg_len", length)
         buf = bytes([0xAA, length, pkg_type, pkgid]) + data + bytes([cs, 0xFF])
-        print('[SI]send immediate', buf, length, pkg_type, pkgid, "[/SI]")
+        #print('[SI]send immediate', buf, length, pkg_type, pkgid, "[/SI]")
         self.uart.write(buf)
 
     def period(self):
@@ -95,8 +102,8 @@ class Comm:
         cs, _ = ustruct.unpack_from("<bb", buf, -2)
         cs %= 256
         pkg = {"type":pkg_type, "id":pkgid, "data": buf[4:-2]}
-        print(self.buf, pkg_type, pkgid, cs, pkg["type"], pkg["id"])
-        if (pkg["type"] == self.pkg_type["kACK"]):
+        #print(self.buf, pkg_type, pkgid, cs, pkg["type"], pkg["id"])
+        if (pkg["type"] == PKGTYPE["kACK"]):
             n_queue = []
             for k, _pkg in enumerate(self.m_sendqueue):
                 if _pkg["id"] != pkgid:
@@ -105,12 +112,12 @@ class Comm:
                     n_queue += self.m_sendqueue[k+1:]
                     break
             self.m_sendqueue = n_queue
-        elif (pkg["type"] != self.pkg_type["kACK"]):
+        elif (pkg["type"] != PKGTYPE["kACK"]):
             self.sendPackageImmediate({
                 "id": pkgid,
-                "type": self.pkg_type["kACK"],
+                "type": PKGTYPE["kACK"],
                 "data": b''
             })
 
-        print("called package handler", pkg["data"])
+        #print("called package handler", pkg["data"])
         # self.handler(pkg)

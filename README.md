@@ -27,7 +27,8 @@ kResponseEncoderById = 0x07,
 kRequestEncoders = 0x08,
 kResponseEncoders = 0x09,
 kFeedGlobalRotation = 0x0A,
-kFeedGlobalTranslation = 0x0B
+kFeedGlobalTranslation = 0x0B,
+kFeedCorners = 0xA0
 ```
 
 #### B. Package structure
@@ -51,13 +52,30 @@ where:
 
 #### C. Communication Flow
 
-##### 0. Roles
+##### 1. Roles
 
 Master: the tempory camera17 coard
 
 Slave: the tempory balance17 board
 
 Super: the UI/ OpenMV/ other high level instances...
+
+OpenMV
+
+Ui
+
+#### 2. Flow
+
+- the `sendPackageImmediate` function send the package only once and will not take care the acknowledge
+- the `queuePackage` function will keep sending the package until corresponding acknowledgement is received. It is done by pushing the package to a queue, 
+- `peroid` function will call  `sendPackageImmediate` function for each package inside the queue, which should be done periodically
+- `listen` function will parse the incoming bytes from Rx
+- `buildBufferPackage` convert byte array to package
+- `packageHandler` is called when package is built. 
+  - If the package is not an acknowledgement package, it will send an acknowledgement package for that; 
+  - if the package is an acknowledgement package, it will remove corresponding package from queue
+
+### D. Protocol
 
 ##### 1. Motor Control
 
@@ -215,5 +233,27 @@ Master->Super: kACK
 Note over Super: new frame
 Super->Master: kFeedTranslation
 Master->Super: kACK
+```
+
+##### 9. Feed Corners
+
+###### data:
+
+`uint16_t` `frame_id`
+
+`uint8_t` `chunk_id` _(the buffer length should be limited below 100)_
+
+`uint16_t` `x0, y0, x1, y1, ...`
+
+###### response:
+
+`<none>`
+
+```sequence
+Note over OpenMV: on frame
+OpenMV -> Ui: kFeedCorners(frame_id, chunk_id ...)
+OpenMV -> Ui: kFeedCorners(frame_id, chunk_id ...)
+Ui -> OpenMV: kACK
+Ui -> OpenMV: kACK
 ```
 

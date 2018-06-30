@@ -22,13 +22,13 @@ import protocol
 mycomm = comm.Comm(print)
 
 protocol.init(mycomm)
-protocol.test()
-protocol.test2()
+# protocol.test()
+# protocol.test2()
 
-while(True):
-    x = 0
-    mycomm.listen()
-    mycomm.period()
+# while(True):
+#     x = 0
+#     mycomm.listen()
+#     mycomm.period()
 
 sensor.reset()
 # grayscale is faster (160x120 max on OpenMV-M7)
@@ -43,10 +43,10 @@ Size = [280, 240]
 equations = []
 corners = []
 
-id = 0
-
 gRotation = 0
 lRotation = 0
+
+frame_id = 0
 
 while(True):
     clock.tick()
@@ -89,7 +89,8 @@ while(True):
             p_ = c[i-1]
             img.draw_line(p[0], p[1], p_[0], p_[1], 5, color=(255, 0, 0))
 
-    corners = list(map(mapToWorld, corners))
+    protocol.feedCorners(frame_id, corners)
+    # corners = list(map(mapToWorld, corners))
     # corners = fuse_corners(corners, 5)
     # corners = getRotateCorners(img, corners, theta)
     # print(corners)
@@ -123,3 +124,4 @@ while(True):
     # img.save("/img/testing"+str(id)+".bmp")
     # id+=1
     # printEq(img)
+    frame_id += 1
