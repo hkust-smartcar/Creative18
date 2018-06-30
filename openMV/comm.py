@@ -3,9 +3,9 @@ import ustruct
 
 
 class Package:
-    def __init__(self, id, pkg_type, data):
-        self.id = id
+    def __init__(self, pkg_type, id, data):
         self.type = pkg_type
+        self.id = id
         self.data = data
 
 
@@ -17,8 +17,8 @@ class Comm:
 
         self.pkgid = 0
         self.pkg_start = False  # Check whether a package start has received
-        self.len = -1  # Check package length
-        self.buffer = []  # Buffer for incoming package
+        self.length = -1  # Check package length
+        self.buf = []  # Buffer for incoming package
         self.handler = _handler
         self.pkg_type = {
             "kACK": 0x00,
@@ -51,7 +51,7 @@ class Comm:
             cs += b
         cs %= 256
         buf = bytes([0xAA, length, pkg_type, pkgid]) + data + bytes([cs, 0xFF])
-        print('send immediate',buf)
+        print('[SI]send immediate',buf,length, pkg_type, pkgid, "[/SI]")
         self.uart.write(buf)
 
     def period(self):
@@ -63,53 +63,59 @@ class Comm:
         # return
         while(self.uart.any() > 0):
             ch = self.uart.read(1)
-            ch = ustruct.unpack("b",ch)[0] % 256
-            print("ch",ch, "buffer", self.buffer)
+            ch = ustruct.unpack("b", ch)[0] % 256
+            # print("ch",ch, "buffer", self.buf)
             if ((not self.pkg_start) and ch == 0xAA):
                 # handle head
-                print("handle head")
+                # print("handle head")
                 self.pkg_start = True
-                self.len = 0
-                self.buffer.append(ch)
-            elif (self.pkg_start and self.len == 0):
+                self.length = 0
+                self.buf.append(ch)
+            elif (self.pkg_start and self.length == 0):
                 # handle length
-                print("handle len")
-                self.len = ch
-                self.buffer.append(ch)
-            elif (self.pkg_start and len(self.buffer) < self.len - 1):
+                # print("handle len")
+                self.length = ch
+                self.buf.append(ch)
+            elif (self.pkg_start and len(self.buf) < self.length - 1):
                 # handle body
-                print("handle body")
-                self.buffer.append(ch)
-            elif (self.pkg_start and len(self.buffer) == self.len - 1 and ch == 0xFF):
+                # print("handle body")
+                self.buf.append(ch)
+            elif (self.pkg_start and len(self.buf) == self.length - 1 and ch == 0xFF):
                 # handle tail
-                print("handle tail")
-                self.buffer.append(ch)
-                self.buildBufferPackage(self.buffer)
+                # print("handle tail")
+                self.buf.append(ch)
+                self.buildBufferPackage()
                 self.pkg_start = False
-                self.buffer = []
-                print("package recieved")
+                self.buf = []
+                #print("package recieved")
             else:
                 # dump
-                print("dump")
+                # print("dump")
                 self.pkg_start = False  # remove the package from handling
-                self.buffer = []
+                self.buf = []
 
-    def buildBufferPackage(self, buf):
-        # _, pkg_type, pkgid = ustruct.unpack("<bbb", buf)
-        # cs, _ = ustruct.unpack_from("<bb", -2, buf)
-        # pkg = Package(pkg_type, pkgid, buf[4:-2])
-        # if (pkg.type == self.pkg_type["kACK"]):
-        #     n_queue = []
-        #     for k, pkg in enumerate(self.m_sendqueue):
-        #         if pkg.id != pkgid:
-        #             n_queue.append(pkg)
-        #         else:
-        #             n_queue += self.m_sendqueue[k+1:]
-        #             break
-        #     self.m_sendqueue = n_queue
-        # elif (pkg.type != self.pkg_type["kACK"]):
-        #     self.sendPackageImmediate(
-        #         Package(pkg.id, self.pkg_type["kACK"], b''))
+    def buildBufferPackage(self):
+        buf = bytes(self.buf)
+        _, _, pkg_type, pkgid = ustruct.unpack("<bbbb", buf)
+        pkg_type %= 256
+        pkgid %= 256
+        cs, _ = ustruct.unpack_from("<bb", buf, -2)
+        cs %= 256
+        pkg = Package(pkg_type, pkgid, buf[4:-2])
+        print(self.buf, pkg_type, pkgid, cs, pkg.type, pkg.id)
+        if (pkg.type == self.pkg_type["kACK"]):
+            n_queue = []
+            for k, _pkg in enumerate(self.m_sendqueue):
+                if _pkg.id != pkgid:
+                    n_queue.append(_pkg)
+                else:
+                    n_queue += self.m_sendqueue[k+1:]
+                    break
+            self.m_sendqueue = n_queue
+        elif (pkg.type != self.pkg_type["kACK"]):
+            self.sendPackageImmediate(
+                Package(pkg.id, self.pkg_type["kACK"], b'')
+            )
 
         print("called package handler")
         # self.handler(pkg)
