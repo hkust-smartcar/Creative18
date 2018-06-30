@@ -1,5 +1,3 @@
-from comm import Package
-
 comm = None
 
 def init(_comm):
@@ -7,7 +5,7 @@ def init(_comm):
     comm = _comm
 
 def test():
-    comm.sendPackageImmediate(Package(1,0,b'0'))
+    comm.sendPackageImmediate({"type":1, "id":0, "data":b''})
 
 def test2():
-    comm.queuePackage(Package(1,0,b'1234'))
+    comm.queuePackage({"type":1, "id":0, "data":b'134'})

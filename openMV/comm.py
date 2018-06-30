@@ -2,13 +2,6 @@ from pyb import UART
 import ustruct
 
 
-class Package:
-    def __init__(self, pkg_type, id, data):
-        self.type = pkg_type
-        self.id = id
-        self.data = data
-
-
 class Comm:
     def __init__(self, _handler):
         self.uart = UART(3, 115200, timeout_char=1000)
@@ -34,15 +27,15 @@ class Comm:
         }
 
     def queuePackage(self, pkg):
-        pkg.id = (self.historic_package_sum+1) % 256
+        pkg["id"] = (self.historic_package_sum+1) % 256
         self.m_sendqueue.append(pkg)
         self.historic_package_sum += 1
-        return pkg.id
+        return pkg["id"]
 
     def sendPackageImmediate(self, pkg):
-        pkgid = pkg.id
-        pkg_type = pkg.type
-        data = pkg.data
+        pkgid = pkg["id"]
+        pkg_type = pkg["type"]
+        data = pkg["data"]
 
         pkgid %= 256
         length = len(data) + 6
@@ -51,7 +44,7 @@ class Comm:
             cs += b
         cs %= 256
         buf = bytes([0xAA, length, pkg_type, pkgid]) + data + bytes([cs, 0xFF])
-        print('[SI]send immediate',buf,length, pkg_type, pkgid, "[/SI]")
+        print('[SI]send immediate', buf, length, pkg_type, pkgid, "[/SI]")
         self.uart.write(buf)
 
     def period(self):
@@ -101,21 +94,23 @@ class Comm:
         pkgid %= 256
         cs, _ = ustruct.unpack_from("<bb", buf, -2)
         cs %= 256
-        pkg = Package(pkg_type, pkgid, buf[4:-2])
-        print(self.buf, pkg_type, pkgid, cs, pkg.type, pkg.id)
-        if (pkg.type == self.pkg_type["kACK"]):
+        pkg = {"type":pkg_type, "id":pkgid, "data": buf[4:-2]}
+        print(self.buf, pkg_type, pkgid, cs, pkg["type"], pkg["id"])
+        if (pkg["type"] == self.pkg_type["kACK"]):
             n_queue = []
             for k, _pkg in enumerate(self.m_sendqueue):
-                if _pkg.id != pkgid:
+                if _pkg["id"] != pkgid:
                     n_queue.append(_pkg)
                 else:
                     n_queue += self.m_sendqueue[k+1:]
                     break
             self.m_sendqueue = n_queue
-        elif (pkg.type != self.pkg_type["kACK"]):
-            self.sendPackageImmediate(
-                Package(pkg.id, self.pkg_type["kACK"], b'')
-            )
+        elif (pkg["type"] != self.pkg_type["kACK"]):
+            self.sendPackageImmediate({
+                "id": pkgid,
+                "type": self.pkg_type["kACK"],
+                "data": b''
+            })
 
-        print("called package handler")
+        print("called package handler", pkg["data"])
         # self.handler(pkg)
