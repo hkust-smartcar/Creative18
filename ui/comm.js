@@ -27,6 +27,12 @@ class Comm {
     this.handler = _handler || (pkg => { console.log(pkg) })
   }
 
+  getPackageId() {
+    let id = this.historic_package_sum % 256
+    this.historic_package_sum++
+    return id
+  }
+
   queuePackage(pkg) {
     pkg.id = (this.historic_package_sum++) % 256
     this.m_sendqueue.push(pkg)

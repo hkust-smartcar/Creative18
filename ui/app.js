@@ -1,7 +1,7 @@
 const SerialPort = require('serialport')
 const Buffer = require('buffer').Buffer
-const Comm = require('./comm')
 const Protocol = require('./protocol')
+const download = require('./download')
 
 pkgid = 0
 
@@ -19,7 +19,9 @@ var app = new Vue({
     encoders_hist: [],
     encoder_interval_crawler: null,
     craw_interval: 250,
-    logs: ''
+    logs: '',
+    frame_corners:{},
+    frame_chunks:{},
   },
   methods: {
     log: str => app.logs += str + '\n',
@@ -71,6 +73,15 @@ var app = new Vue({
       while (app.encoders_hist.length > 100) {
         app.encoders_hist.shift()
       }
+    },
+
+    clearFrameCorners: ()=>{
+      app.frame_corners = {}
+      app.frame_chunks = {}
+    },
+
+    exportFrameCorners: ()=>{
+      download('frame_corners.txt',JSON.stringify(app.frame_corners))
     }
   }
 })

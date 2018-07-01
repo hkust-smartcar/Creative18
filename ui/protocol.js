@@ -9,11 +9,10 @@ class Protocol {
 
   getEncoders() {
     this.comm.sendPackageImmediate({
-      id: pkgid++,
+      id: this.comm.getPackageId(),
       type: Comm.pkg_type.kRequestEncoders,
       data: Buffer.alloc(0)
     })
-    pkgid %= 256
   }
 
   movecar(x, y) {
@@ -21,11 +20,10 @@ class Protocol {
     data.writeInt16LE(x, 0)
     data.writeInt16LE(y, 0)
     this.comm.sendPackageImmediate({
-      id: plgid++,
+      id: this.comm.getPackageId(),
       type: Comm.pkg_type.kRequestMove,
       data
     })
-    pkgid %= 256
   }
 
   setMotorById(motor_id, power) {
@@ -33,11 +31,10 @@ class Protocol {
     data.writeUInt8(motor_id, 0)
     data.writeInt16LE(power, 1)
     this.comm.sendPackageImmediate({
-      id: pkgid++,
+      id: this.comm.getPackageId(),
       type: 0x05,
       data
     })
-    pkgid %= 256
   }
 
   handler(pkg) {
@@ -68,6 +65,20 @@ class Protocol {
 
   feedCornersHandler(pkg) {
     console.log(pkg)
+    const frame_id = pkg.data.readUInt16LE(0)
+    const chunk_id = pkg.data.readUInt8LE(2)
+    if(!(frame_id in this.app.frame_corners)){
+      this.app.frame_corners[frame_id] = []
+      this.app.frame_chunks[frame_id] = {}
+    }
+    if (!(chunk_id in this.app.frame_chunks[frame_id])){
+      this.app.frame_chunks[frame_id][chunk_id] = true
+      for(let cursor = 3; cursor < pkg.data.length; cursor += 4){
+        const x = pkg.data.readUInt8LE(cursor)
+        const y = pkg.data.readUInt8LE(cursor + 2)
+        this.app.frame_corners[frame_id].push([x,y])
+      }
+    }
   }
 }
 
