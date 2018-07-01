@@ -7,14 +7,14 @@ class Comm {
     this.port = new SerialPort(portName, { baudRate: 115200 })
     this.port.on('error', function (err) {
       app.log(`'Error: ', ${err.message}`)
-      console.log('Error: ', err.message);
+      // console.log('Error: ', err.message);
     })
     this.port.on('data', data => {
       data.forEach(element => {
         this.parse(element)
       });
     })
-    console.log(`connected to ${portName}`)
+    // console.log(`connected to ${portName}`)
     app.log(`connected to ${portName}`)
 
     this.m_sendqueue = []
@@ -41,10 +41,10 @@ class Comm {
     data.copy(buf, 4)
     buf.writeUInt8(0, len - 2)
     buf.writeUInt8(0xFF, len - 1)
-    console.log(buf, buf.readUInt8())
+    // console.log(buf, buf.readUInt8())
     const checksum = buf.reduce((oldv, curv) => (oldv + curv) % 256, 0)
     buf.writeUInt8(checksum, len - 2)
-    console.log(checksum, buf)
+    // console.log(checksum, buf)
     this.port.write(buf)
   }
 
@@ -77,19 +77,19 @@ class Comm {
 
   buildBufferPackage(buffer) {
     let _buffer = Buffer.from(buffer)
-    console.log('building', buffer)
+    // console.log('building', buffer)
     const pkg = {
       type: _buffer.readUInt8(2),
       id: _buffer.readUInt8(3),
       data: Buffer.from(buffer.splice(4, _buffer.readUInt8(1) - 6))
     }
-    console.log('package', pkg)
+    // console.log('package', pkg)
     if (pkg.type === Comm.pkg_type.kACK) {
       let flag = false;
       this.m_sendqueue = this.m_sendqueue.filter(({ id }) => { flag = flag || id === pkg.id; return id != pkg.id })
-      console.log('deleted', pkg.id, flag)
+      // console.log('deleted', pkg.id, flag)
     } else if (pkg.type !== Comm.pkg_type.kACK) {
-      this.sendPackageImmediate({id:pkg.id, type:Comm.pkg_type.kACK,data:Buffer.alloc(0)})
+      this.sendPackageImmediate({ id: pkg.id, type: Comm.pkg_type.kACK, data: Buffer.alloc(0) })
     }
     this.handler(pkg)
   }
@@ -105,7 +105,10 @@ Comm.pkg_type = {
   kRequestEncoderById: 0x06,
   kResponseEncoderById: 0x07,
   kRequestEncoders: 0x08,
-  kResponseEncoders: 0x09
+  kResponseEncoders: 0x09,
+  kFeedGlobalRotation: 0x0A,
+  kFeedGlobalTranslation: 0x0B,
+  kFeedCorners: 0xA0
 }
 
 module.exports = Comm

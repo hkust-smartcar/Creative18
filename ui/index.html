@@ -9,11 +9,11 @@
 
 <body>
   <div id="app">
-    <div :style="`visibility: ${(!comm?'unset':'hidden')}`">
+    <div :style="`visibility: ${(!protocol?'unset':'hidden')}`">
       <h3>Please connect</h3>
       <button v-for="port in ports" @click="()=>connect(port.comName)">{{port.comName}}</button>
     </div>
-    <div :style="`visibility: ${(!!comm?'unset':'hidden')}; display:flex`">
+    <div :style="`visibility: ${(!!protocol?'unset':'hidden')}; display:flex`">
       <div style="display:flex-item">
         <button @click="()=>write('y')">send</button>
         <p>
