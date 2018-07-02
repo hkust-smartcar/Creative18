@@ -12,6 +12,8 @@ PKGTYPE = {
             "kResponseEncoderById": 0x07,
             "kRequestEncoders": 0x08,
             "kResponseEncoders": 0x09,
+            "kFeedGlobalRotation": 0x0A,
+            "kFeedGlobalTranslation": 0x0B,
             "kFeedCorners": 0xA0
         }
 
@@ -51,7 +53,7 @@ class Comm:
         cs %= 256
         #print("pkg_len", length)
         buf = bytes([0xAA, length, pkg_type, pkgid]) + data + bytes([cs, 0xFF])
-        #print('[SI]send immediate', buf, length, pkg_type, pkgid, "[/SI]")
+        print('[SI]send immediate', buf, length, pkg_type, pkgid, cs, "[/SI]")
         self.uart.write(buf)
 
     def period(self):

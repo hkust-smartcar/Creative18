@@ -13,7 +13,10 @@ Wheelbase::Wheelbase():
 motor0(GetMotorConfig(0)),
 motor1(GetMotorConfig(1)),
 encoder0(GetEncoderConfig(0)),
-encoder1(GetEncoderConfig(1)){
+encoder1(GetEncoderConfig(1))
+//lcd(GetLcdConfig()),
+//writer(GetTypeWriterConfig())
+{
 	pProtocol = new Protocol(this);
 	pUiProtocol = new UiProtocol(this);
 }
@@ -82,6 +85,13 @@ void Wheelbase::Test1(){
 	pProtocol->RequestSetMotor(123);
 	pProtocol->RequestEncoder();
 }
+
+void Wheelbase::TestOpenMVProtocol(){
+//	char str[20];
+//	sprintf(str,"r=%.4f",globalRotation);
+//	writer.WriteString(str);
+}
+
 //St7735r::Config Wheelbase::GetLcdConfig(){
 //	St7735r::Config lcd_config;
 //	lcd_config.orientation = 0;

@@ -128,28 +128,44 @@ void slave(){
 }
 
 void test(){
-	Test t;
-	t.test1();
+	Wheelbase wheelbase;
 
 	Led::Config led_config;
 	led_config.id = 0;
 	Led led0(led_config);
 	led_config.id = 1;
 	Led led1(led_config);
+	time_t nextRender = 0;
+	while(1){
+		if(System::Time()>nextRender){
+			wheelbase.TestOpenMVProtocol();
 
-	while (true){
-		while(!t.flag){
 			led0.Switch();
-			System::DelayMs(250);
-		}
-		while(t.flag){
-			led0.Switch();
-			System::DelayMs(500);
-		}
-		if(t.flag){
-			led1.SetEnable(t.flag);
+			nextRender+=250;
 		}
 	}
+//	Test t;
+//	t.test1();
+//
+//	Led::Config led_config;
+//	led_config.id = 0;
+//	Led led0(led_config);
+//	led_config.id = 1;
+//	Led led1(led_config);
+//
+//	while (true){
+//		while(!t.flag){
+//			led0.Switch();
+//			System::DelayMs(250);
+//		}
+//		while(t.flag){
+//			led0.Switch();
+//			System::DelayMs(500);
+//		}
+//		if(t.flag){
+//			led1.SetEnable(t.flag);
+//		}
+//	}
 }
 
 int main(void)
@@ -160,7 +176,7 @@ int main(void)
 //	test();
 	master();
 //	slave();
-
+//	test();
 
 	return 0;
 }

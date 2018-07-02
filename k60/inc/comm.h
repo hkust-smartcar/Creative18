@@ -46,16 +46,19 @@ public:
 
 	struct PkgType{
 		static const Byte
-				kACK = 0x00,
-				kRequestSetMotor = 0x01,
-				kRequestEncoder = 0x02,
-				kResponseEncoder = 0x03,
-				kRequestMove = 0x04,
-				kRequestSetMotorById = 0x05,
-				kRequestEncoderById = 0x06,
-				kResponseEncoderById = 0x07,
-				kRequestEncoders = 0x08,
-				kResponseEncoders = 0x09;
+			kACK = 0x00,
+			kRequestSetMotor = 0x01,
+			kRequestEncoder = 0x02,
+			kResponseEncoder = 0x03,
+			kRequestMove = 0x04,
+			kRequestSetMotorById = 0x05,
+			kRequestEncoderById = 0x06,
+			kResponseEncoderById = 0x07,
+			kRequestEncoders = 0x08,
+			kResponseEncoders = 0x09,
+			kFeedGlobalRotation = 0x0A,
+			kFeedGlobalTranslation = 0x0B,
+			kFeedCorners = 0xA0;
 	};
 
 	struct Package{

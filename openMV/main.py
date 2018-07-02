@@ -49,6 +49,9 @@ lRotation = 0
 frame_id = 0
 
 while(True):
+    protocol.feedGlobalRotation(3.145,23)
+
+while(True):
     clock.tick()
     equations = []
     corners = []

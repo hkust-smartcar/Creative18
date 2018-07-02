@@ -40,3 +40,10 @@ def feedCorners(frame_id, corners):
         "id": comm.getPkgId(),
         "data": ustruct.pack("<h", frame_id, chunk_id)+byte
     })
+
+def feedGlobalRotation(angle, time):
+    comm.sendPackageImmediate({
+        "type": PKGTYPE["kFeedGlobalRotation"],
+        "id": comm.getPkgId(),
+        "data": ustruct.pack("<fB",angle, time)
+    })

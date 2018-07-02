@@ -225,6 +225,8 @@ Master->Super: kACK
 
 `int32_t` `x_translation, y_translation`
 
+`uint8_t` time_spent_on_calculation
+
 ###### return:
 
 `none`
@@ -243,7 +245,7 @@ Master->Super: kACK
 
 `uint8_t` `chunk_id` _(the buffer length should be limited below 100)_
 
-`uint16_t` `x0, y0, x1, y1, ...`
+`uint16_t[]` `x0, y0, x1, y1, ...`
 
 ###### response:
 

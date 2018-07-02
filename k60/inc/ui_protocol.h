@@ -69,6 +69,8 @@ public:
 	void RequestSetMotorByIdHandler(const Bluetooth::Package& pkg);
 	void RequestEncoderByIdHandler(const Bluetooth::Package& pkg);
 	void RequestEncodersHandler(const Bluetooth::Package& pkg);
+	void FeedGlobalRotationHandler(const Bluetooth::Package& pkg);
+	void FeedGlobalTranslationHandler(const Bluetooth::Package& pkg);
 
 private:
 	bool recievedPackageId[10];
