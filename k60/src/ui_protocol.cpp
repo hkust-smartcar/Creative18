@@ -118,7 +118,7 @@ void UiProtocol::RequestEncodersHandler(const Bluetooth::Package& pkg){
 void UiProtocol::FeedGlobalRotationHandler(const Bluetooth::Package& pkg){
 	if(pWheelbase){
 		memcpy(&pWheelbase->globalRotation, &*pkg.data.begin(), 4);
-		memcpy(&pWheelbase->globalRotationLapse, &*pkg.data.begin() + 4, 1);
+		memcpy(&pWheelbase->globalRotationLapse, &*pkg.data.begin() + 4, 2);
 		pWheelbase->globalRotationReceivedTime = System::Time();
 	}
 }
@@ -127,7 +127,7 @@ void UiProtocol::FeedGlobalTranslationHandler(const Bluetooth::Package& pkg){
 	if(pWheelbase){
 		memcpy(&pWheelbase->globalTranslationX, &*pkg.data.begin(), 4);
 		memcpy(&pWheelbase->globalTranslationY, &*pkg.data.begin() + 4, 4);
-		memcpy(&pWheelbase->globalTranslationLapse, &*pkg.data.begin() + 8, 1);
+		memcpy(&pWheelbase->globalTranslationLapse, &*pkg.data.begin() + 8, 2);
 		pWheelbase->globalTranslationReceivedTime = System::Time();
 	}
 }

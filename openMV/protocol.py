@@ -26,24 +26,24 @@ def feedCorners(frame_id, corners):
     chunk_id = 0
     byte = b''
     for k, p in enumerate(corners):
-        byte += ustruct.pack("<hh", p[0], p[1])
+        byte += ustruct.pack("<HH", p[0], p[1])
         if k % 23 == 22:
             comm.sendPackageImmediate({
                 "type": PKGTYPE["kFeedCorners"],
                 "id": comm.getPkgId(),
-                "data": ustruct.pack("<h", frame_id, chunk_id)+byte
+                "data": ustruct.pack("<HB", frame_id, chunk_id)+byte
             })
             byte = b''
             chunk_id+=1
     comm.sendPackageImmediate({
         "type": PKGTYPE["kFeedCorners"],
         "id": comm.getPkgId(),
-        "data": ustruct.pack("<h", frame_id, chunk_id)+byte
+        "data": ustruct.pack("<HB", frame_id, chunk_id)+byte
     })
 
 def feedGlobalRotation(angle, time):
     comm.sendPackageImmediate({
         "type": PKGTYPE["kFeedGlobalRotation"],
         "id": comm.getPkgId(),
-        "data": ustruct.pack("<fB",angle, time)
+        "data": ustruct.pack("<fH",angle, time)
     })

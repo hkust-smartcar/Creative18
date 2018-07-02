@@ -50,14 +50,14 @@ def get_rotation(img, rects, length, threshold):
 
 def get_length(img, rects, threshold):
     dist_votes = {}
-    length = 30
+    length = 50
     for rk, r in enumerate(rects):
         c = r.corners()
         for i, p1 in enumerate(c):
             p1 = mapToWorld(p1)
             p2 = mapToWorld(c[i-1])
             local_length = dist(p1, p2)
-            if(local_length < 20 or local_length > 35):
+            if(local_length < 45 or local_length > 55):
                 break
             vote(dist_votes, local_length, threshold)
     length = getHighestVote(dist_votes, length)
@@ -91,10 +91,12 @@ def getGlobalRotation(prevg, prevl, currl):
     # if (True or abs(prevl) > pi/4 and abs(currl) > pi/4):
     if(sgn(prevl) == 1 and sgn(currl) == -1):
         #prev is positive, current is negative
-        currg += pi/2
+        if(abs(prevl - currl) > pi/4):
+            currg += pi/2
     elif(sgn(prevl) == -1 and sgn(currl) == 1):
         #prev is negative, current is positive
-        currg -= pi/2
+        if(abs(prevl - currl) > pi/4):
+            currg -= pi/2
     return currg
 
 

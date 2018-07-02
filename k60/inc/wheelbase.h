@@ -71,11 +71,11 @@ private:
 	int32_t encoder_counts[3] = {0,0,0};
 
 	float globalRotation = 0;
-	uint8_t globalRotationLapse = 0;
+	uint16_t globalRotationLapse = 0;
 	time_t globalRotationReceivedTime = 0;
 
 	int32_t globalTranslationX = 0, globalTranslationY = 0;
-	uint8_t globalTranslationLapse = 0;
+	uint16_t globalTranslationLapse = 0;
 	time_t globalTranslationReceivedTime = 0;
 
 	friend Protocol;

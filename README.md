@@ -207,7 +207,7 @@ Super->Master: kACK
 
 `float` rotation angle
 
-`uint8_t` time_spent_on_calculation
+`uint16_t` time_spent_on_calculation
 
 ###### response
 
@@ -225,7 +225,7 @@ Master->Super: kACK
 
 `int32_t` `x_translation, y_translation`
 
-`uint8_t` time_spent_on_calculation
+`uint16_t` time_spent_on_calculation
 
 ###### return:
 

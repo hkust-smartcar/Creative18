@@ -65,7 +65,7 @@ class Comm:
         # return
         while(self.uart.any() > 0):
             ch = self.uart.read(1)
-            ch = ustruct.unpack("b", ch)[0] % 256
+            ch = ustruct.unpack("B", ch)[0] % 256
             # print("ch",ch, "buffer", self.buf)
             if ((not self.pkg_start) and ch == 0xAA):
                 # handle head
@@ -98,10 +98,10 @@ class Comm:
 
     def buildBufferPackage(self):
         buf = bytes(self.buf)
-        _, _, pkg_type, pkgid = ustruct.unpack("<bbbb", buf)
+        _, _, pkg_type, pkgid = ustruct.unpack("<BBBB", buf)
         pkg_type %= 256
         pkgid %= 256
-        cs, _ = ustruct.unpack_from("<bb", buf, -2)
+        cs, _ = ustruct.unpack_from("<BB", buf, -2)
         cs %= 256
         pkg = {"type":pkg_type, "id":pkgid, "data": buf[4:-2]}
         #print(self.buf, pkg_type, pkgid, cs, pkg["type"], pkg["id"])

@@ -3,6 +3,7 @@
 import sensor
 import image
 import time
+import pyb
 from fuse_corners import fuse_corners
 from find_num import find_num
 from grid import get_rotation,\
@@ -49,29 +50,11 @@ lRotation = 0
 frame_id = 0
 
 while(True):
-    protocol.feedGlobalRotation(3.145,23)
-
-while(True):
-    clock.tick()
-    equations = []
-    corners = []
-    img = sensor.snapshot().lens_corr(1.8,1)
-    rects = img.find_rects(threshold=10000)
-    for k, r in enumerate(rects):
-        c = r.corners()
-        corners += c
-        for i, p in enumerate(c):
-            p_ = c[i-1]
-            img.draw_line(p[0], p[1], p_[0], p_[1], 5, color=(255, 255, 0))
-    protocol.feedCorners(frame_id,corners)
-    img.draw_line(80, 120, 80, 0, 5, color=(255, 0, 0))
-    frame_id+=1
-
-while(True):
     clock.tick()
     equations = []
     corners = []
     img = sensor.snapshot()#.lens_corr(1.8,1)
+    startTime = pyb.millis()
 
     rects = img.find_rects(threshold=10000)
     for k, r in enumerate(rects):
@@ -83,9 +66,12 @@ while(True):
     # try:
     length = get_length(img, rects, 2)
     print('p_length',length)
+    if(length == 0):
+        continue
     rects = getGoodRects(rects, length, 10)
     dx, theta = get_rotation(img, rects, length, 2)
     gRotation = getGlobalRotation(gRotation, lRotation, theta)
+    protocol.feedGlobalRotation(gRotation, pyb.millis() - startTime)
     #gRotation = getGlobalRotationWithDirection(gRotation,lRotation,theta,False)
     lRotation = theta
     # print('deg', deg(gRotation), 'theta', theta)
@@ -93,8 +79,8 @@ while(True):
     # print(e)
     # continue
     # print(dx,length,theta)
-    [x0, y0] = mapToImage([140, 240])
-    [x1, y1] = mapToImage([140-dx, 240-length])
+    [x0, y0] = mapToImage([100, 200])
+    [x1, y1] = mapToImage([100-dx, 200-length])
     img.draw_line(x0, y0, x1, y1, color=(255, 0, 0))
 
     [x0, y0] = [70, 60]
@@ -107,8 +93,6 @@ while(True):
         for i, p in enumerate(c):
             p_ = c[i-1]
             img.draw_line(p[0], p[1], p_[0], p_[1], 5, color=(255, 0, 0))
-
-    protocol.feedCorners(frame_id, corners)
     # corners = list(map(mapToWorld, corners))
     # corners = fuse_corners(corners, 5)
     # corners = getRotateCorners(img, corners, theta)

@@ -173,8 +173,8 @@ int main(void)
 	System::Init();
 
 
-//	test();
-	master();
+	test();
+//	master();
 //	slave();
 //	test();
 
