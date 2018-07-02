@@ -28,7 +28,7 @@ class Comm:
         self.handler = _handler
 
     def getPkgId(self):
-        t = self.historic_package_sum
+        t = self.historic_package_sum % 256
         self.historic_package_sum += 1
         return t
 

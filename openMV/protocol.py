@@ -31,11 +31,12 @@ def feedCorners(frame_id, corners):
             comm.sendPackageImmediate({
                 "type": PKGTYPE["kFeedCorners"],
                 "id": comm.getPkgId(),
-                "data": ustruct.pack("<h", frame_id, chunk_id/23)+byte
+                "data": ustruct.pack("<h", frame_id, chunk_id)+byte
             })
             byte = b''
+            chunk_id+=1
     comm.sendPackageImmediate({
         "type": PKGTYPE["kFeedCorners"],
         "id": comm.getPkgId(),
-        "data": ustruct.pack("<h", frame_id, chunk_id/23)+byte
+        "data": ustruct.pack("<h", frame_id, chunk_id)+byte
     })

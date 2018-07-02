@@ -52,6 +52,22 @@ while(True):
     clock.tick()
     equations = []
     corners = []
+    img = sensor.snapshot().lens_corr(1.8,1)
+    rects = img.find_rects(threshold=10000)
+    for k, r in enumerate(rects):
+        c = r.corners()
+        corners += c
+        for i, p in enumerate(c):
+            p_ = c[i-1]
+            img.draw_line(p[0], p[1], p_[0], p_[1], 5, color=(255, 255, 0))
+    protocol.feedCorners(frame_id,corners)
+    img.draw_line(80, 120, 80, 0, 5, color=(255, 0, 0))
+    frame_id+=1
+
+while(True):
+    clock.tick()
+    equations = []
+    corners = []
     img = sensor.snapshot()#.lens_corr(1.8,1)
 
     rects = img.find_rects(threshold=10000)

@@ -9,9 +9,10 @@ from PIL import Image
 import json
 
 
-newsize = (280,240)
-src = [[55,79], [107,81], [102,51], [62,50]]
-tgt = [[120,200],[160,200],[160,160],[120,160]]
+path = "onCar.jpg"
+newsize = (200,240)
+src = [[43,34], [111,35], [22,84], [128,86]]
+tgt = [[50,100],[140,100],[50,190],[140,190]]
 
 """
 pj = np.squeeze(np.asarray(np.matrix('''
@@ -129,7 +130,6 @@ print(pm2(pj,[1,1]))
 print(pm2(pj,[1,0]))
 pj_ = np.linalg.inv(pj)
 
-path = "test2.jpg"
 jpgfile = Image.open(path)
 print(jpgfile.bits, jpgfile.size, jpgfile.format)
 print('new size',newsize)
@@ -152,5 +152,6 @@ for x in range(newsize[0]):
             #print ((x,y),p,e)
             #raise
 newfile.show()
+newfile.save(path+"_fixed.jpg")
 generate(pj_,"pj")
 generate(pj,"jp")
