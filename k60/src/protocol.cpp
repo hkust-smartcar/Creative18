@@ -35,6 +35,9 @@ void Protocol::Handler(const Bluetooth::Package& pkg){
 	case Bluetooth::PkgType::kResponseEncoder:
 		ResponseEncoderHandler(pkg);
 		break;
+	case Bluetooth::PkgType::kRequestSetServo:
+		RequestSetServoHandler(pkg);
+		break;
 	}
 }
 
@@ -52,6 +55,12 @@ uint8_t Protocol::ResponseEncoder(int32_t count){
 	vector<Byte> data(4,0);
 	memcpy(&*data.begin(),&count,4);
 	return m_bt.QueuePackage({Bluetooth::PkgType::kResponseEncoder,0,data});
+}
+
+uint8_t Protocol::RequestSetServo(uint16_t degree){
+	vector<Byte> data(2,0);
+	memcpy(&*data.begin(),&degree,2);
+	return m_bt.QueuePackage({Bluetooth::PkgType::kRequestSetServo,0,data});
 }
 
 void Protocol::RequestSetMotorHandler(const Bluetooth::Package& pkg){
@@ -106,4 +115,18 @@ int32_t Protocol::AwaitRequestEncoder(LcdTypewriter* pwriter){
 		}
 	}
 	return encoder_count;
+}
+
+void Protocol::RequestSetServoHandler(const Bluetooth::Package& pkg){
+	uint16_t degree;
+	memcpy(&degree, &*pkg.data.begin(),2);
+	if(test != nullptr){
+//		char c[20];
+//		sprintf(c,"%d req sm %d", filteredRecievedPackageSumByType[pkg.type], speed);
+//		test->lcd.SetRegion({0,0,100,20});
+//		test->writer.WriteString(c);
+	}
+	if(pWheelbase){
+		pWheelbase->ServoSetDegree(0,degree);
+	}
 }

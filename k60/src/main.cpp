@@ -37,7 +37,7 @@ using namespace libsc;
 using namespace libbase::k60;
 
 int32_t encoder_value0 = 0,encoder_value1 = 0,encoder_value2 = 0;
-uint16_t servoAngle = 0;
+uint16_t servoAngle = 0, servoAngleImg;
 int32_t motorSpeed = 0, motorSpeedImg = 0;
 int car = 0;
 bool yo = false;
@@ -103,6 +103,12 @@ void master(){
 			wheelbase.MotorSetPower(0,motorSpeed);
 			wheelbase.MotorSetPower(1,motorSpeed);
 			wheelbase.MotorSetPower(2,motorSpeed);
+	    }
+
+	    if(servoAngleImg != servoAngle){
+	    	servoAngleImg = servoAngle;
+			wheelbase.ServoSetDegree(0,servoAngle);
+			wheelbase.ServoSetDegree(1,servoAngle);
 	    }
 	}
 }
@@ -173,8 +179,8 @@ int main(void)
 	System::Init();
 
 
-	test();
-//	master();
+//	test();
+	master();
 //	slave();
 //	test();
 

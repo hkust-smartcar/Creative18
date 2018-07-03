@@ -13,7 +13,8 @@ Wheelbase::Wheelbase():
 motor0(GetMotorConfig(0)),
 motor1(GetMotorConfig(1)),
 encoder0(GetEncoderConfig(0)),
-encoder1(GetEncoderConfig(1))
+encoder1(GetEncoderConfig(1)),
+servo(GetServoConfig(0))
 //lcd(GetLcdConfig()),
 //writer(GetTypeWriterConfig())
 {
@@ -38,6 +39,17 @@ void Wheelbase::MotorSetPower(uint8_t id, int16_t speed){
 		break;
 	case 2:
 		pProtocol->RequestSetMotor(speed);
+		break;
+	}
+}
+
+void Wheelbase::ServoSetDegree(uint8_t id, uint16_t degree){
+	switch(id){
+	case 0:
+		servo.SetDegree(degree);
+		break;
+	case 1:
+		pProtocol->RequestSetServo(degree);
 		break;
 	}
 }

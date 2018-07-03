@@ -12,6 +12,7 @@
 #include <libsc/lcd_typewriter.h>
 #include <libsc/dir_motor.h>
 #include <libsc/dir_encoder.h>
+#include <libsc/servo.h>
 
 #include <string>
 
@@ -29,6 +30,7 @@ public:
 	~Wheelbase();
 
 	void MotorSetPower(uint8_t id, int16_t speed);
+	void ServoSetDegree(uint8_t id, uint16_t degree);
 	void UpdateEncoders();
 	int32_t EncoderGetCount(uint8_t id);
 
@@ -64,8 +66,18 @@ private:
 		return config;
 	}
 
+	Servo::Config GetServoConfig(uint8_t id){
+		Servo::Config config;
+		config.id = id;
+		config.period = 20000;
+		config.min_pos_width = 1000;
+		config.max_pos_width = 2000;
+		return config;
+	}
+
 	DirMotor motor0, motor1;
 	DirEncoder encoder0, encoder1;
+	Servo servo;
 
 //	int32_t prev_encoder2_count = 0;
 	int32_t encoder_counts[3] = {0,0,0};

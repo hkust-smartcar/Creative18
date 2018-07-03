@@ -58,6 +58,7 @@ public:
 			kResponseEncoders = 0x09,
 			kFeedGlobalRotation = 0x0A,
 			kFeedGlobalTranslation = 0x0B,
+			kRequestSetServo = 0x0C,
 			kFeedCorners = 0xA0;
 	};
 

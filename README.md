@@ -28,6 +28,7 @@ kRequestEncoders = 0x08,
 kResponseEncoders = 0x09,
 kFeedGlobalRotation = 0x0A,
 kFeedGlobalTranslation = 0x0B,
+kRequestSetServo = 0x0C,
 kFeedCorners = 0xA0
 ```
 
@@ -259,3 +260,20 @@ Ui -> OpenMV: kACK
 Ui -> OpenMV: kACK
 ```
 
+##### 10. Servo Control
+
+###### Data:
+
+`uint16_t` `servo degree` (PWM)
+
+###### Response:
+
+`<none>`
+
+```sequence
+Master -> Slave: kRequestSetServo(Degree)
+Slave -> Master: kACK
+Note over Slave: servo0 set degree
+```
+
+##### 
