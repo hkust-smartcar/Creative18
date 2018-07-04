@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>Hello World!</title>
+  <title>Creative UI</title>
   <link href='https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons' rel="stylesheet">
   <link href="https://unpkg.com/vuetify/dist/vuetify.min.css" rel="stylesheet">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
@@ -52,14 +52,31 @@
                 </div>
               </v-tab-item>
               <v-tab-item key="corners">
+                <p>Rotation: {{globalRotation}} (RAD)</p>
+                <p>Translation:{{globalTranslationX}}, {{globalTranslationY}}</p>
+                <p>FrameID: {{last_frame_id}} FPS:{{fps}}</p>
                 <canvas id="corners_canvas" width="500px" height="500px">
 
                 </canvas>
                 <textarea style="width:100%;height:100vh" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
                   {{JSON.stringify(Object.keys(frame_corners))}}
                 </textarea>
-                <v-btn @click="clearFrameCorners">Clear Received Corners</v-btn>
-                <v-btn @click="exportFrameCorners">Download Received Corners</v-btn>
+                <div>
+                  <v-btn @click="clearFrameCorners">Clear Received Corners</v-btn>
+                  <v-btn @click="exportFrameCorners" color="primary">Download Received Corners</v-btn>
+                </div>
+                <div>
+                  <v-btn @click="clearFrameRotations">Clear Rotation Data</v-btn>
+                  <v-btn @click="exportFrameRotations" color="primary">Download Rotation Data</v-btn>
+                </div>
+                <div>
+                  <v-btn @click="clearFrameTranslations">Clear Translation Data</v-btn>
+                  <v-btn @click="exportFrameTranslations" color="primary">Download Translation Data</v-btn>
+                </div>
+                <div>
+                  <v-btn @click="clearFrameDetails">Clear Details</v-btn>
+                  <v-btn @click="exportFrameTranslations" color="primary">Download Details</v-btn>
+                </div>
               </v-tab-item>
               <v-tab-item key="chessboard">
               </v-tab-item>

@@ -1,5 +1,5 @@
 {
-  "name": "electron-serialport",
+  "name": "creative-ui",
   "version": "1.0.1",
   "description": "A minimal Electron application with node serialport",
   "main": "main.js",
@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:johnny-five-io/electron-serialport.git"
+    "url": "git@github.com:hkust-smartcar/Creative18.git"
   },
   "keywords": [
     "Electron",
@@ -22,6 +22,7 @@
   "license": "CC0-1.0",
   "devDependencies": {
     "electron": "^1.4.1",
+    "electron-prebuilt-compile": "2.0.4",
     "electron-rebuild": "^1.7.3"
   },
   "dependencies": {

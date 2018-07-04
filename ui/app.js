@@ -3,8 +3,6 @@ const Buffer = require('buffer').Buffer
 const Protocol = require('./protocol')
 const download = require('./download')
 
-pkgid = 0
-
 var app = new Vue({
   el: '#app',
   data: {
@@ -26,13 +24,18 @@ var app = new Vue({
     frame_corners:{},
     frame_chunks:{},
     active: null,
+    globalRotations:{},
     globalRotation: 0,
     globalRotationLapse: 0,
     globalRotationReceivedTime: 0,
+    globalTranslations:{},
     globalTranslationX: 0,
     globalTranslationY: 0,
     globalTranslationLapse: 0,
-    globalTranslationReceivedTime: 0
+    globalTranslationReceivedTime: 0,
+    last_frame_id:0,
+    last_frame_receive_time:0,
+    fps:'N/A'
   },
   methods: {
     log: str => app.logs += str + '\n',
@@ -95,6 +98,38 @@ var app = new Vue({
 
     exportFrameCorners: ()=>{
       download('frame_corners.txt',JSON.stringify(app.frame_corners))
+    },
+
+    clearFrameRotations: ()=>{
+      app.globalRotations = {}
+    },
+
+    exportFrameRotations: ()=>{
+      download('frame_rotations.txt',JSON.stringify(app.globalRotations))
+    },
+
+    clearFrameTranslations: ()=>{
+      app.globalTranslations = {}
+    },
+
+    exportFrameTranslations: ()=>{
+      download('frame_translations.txt',JSON.stringify(app.globalTranslations))
+    },
+
+    clearFrameDetails: ()=>{
+      app.globalTranslations = {}
+      app.globalRotations = {}
+      app.frame_corners = {}
+      app.frame_chunks = {}
+    },
+
+    exportFrameDetails: ()=>{
+      details = {}
+      download('frame_details.txt',JSON.stringify({
+        corners:app.corners,
+        rotations:app.globalRotations,
+        translations:app.globalTranslations
+      }))
     },
 
     drawLine: (ctx,x1,y1,x2,y2,color = '#000000')=>{

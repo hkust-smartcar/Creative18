@@ -53,7 +53,7 @@ class Protocol {
         this.feedGlobalRotationHandler(pkg)
         break
       case Comm.pkg_type.kFeedGlobalTranslation:
-        this.fe
+        this.feedGlobalTranslationHandler(pkg)
     }
   }
 
@@ -92,19 +92,36 @@ class Protocol {
       }
     }
     this.app.drawCorners(this.app.frame_corners[frame_id], true)
+    this.updateFrame(frame_id)
   }
 
   feedGlobalRotationHandler(pkg){
     this.app.globalRotation = pkg.data.readFloatLE(0)
     this.app.globalRotationLapse = pkg.data.readUInt16LE(4)
+    const frame_id = pkg.data.readUInt16LE(6)
+    this.app.globalRotations[frame_id] = this.app.globalRotation
     this.app.globalRotationReceivedTime = Date.now()
+    this.updateFrame(frame_id)
   }
 
   feedGlobalTranslationHandler(pkg){
     this.app.globalTranslationX = pkg.data.readInt32LE(0)
     this.app.globalTranslationY = pkg.data.readInt32LE(4)
     this.app.globalTranslationLapse = pkg.data.readUInt16LE(8)
+    const frame_id = pkg.data.readUInt16LE(10)
+    this.app.globalTranslations[frame_id] = [this.app.globalTranslationX,this.app.globalTranslationY]
     this.app.globalTranslationReceivedTime = Date.now()
+    this.updateFrame(frame_id)
+  }
+
+  updateFrame(frame_id){
+    if(this.app.last_frame_id < frame_id){
+      const now = Date.now()
+      const lapse = now - this.app.last_frame_receive_time
+      this.app.last_frame_id = frame_id
+      this.app.last_frame_receive_time = now
+      this.app.fps = Math.floor(1000/lapse)
+    }
   }
 }
 
