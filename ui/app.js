@@ -14,6 +14,8 @@ var app = new Vue({
     ports: [],
     parser: null,
     canvas: null,
+    cornerCanvas: null,
+    cornerCtx: null,
     ctx: null,
     motor: [0, 0, 0],
     encoders: [0, 0, 0],
@@ -23,7 +25,14 @@ var app = new Vue({
     logs: '',
     frame_corners:{},
     frame_chunks:{},
-    active: null
+    active: null,
+    globalRotation: 0,
+    globalRotationLapse: 0,
+    globalRotationReceivedTime: 0,
+    globalTranslationX: 0,
+    globalTranslationY: 0,
+    globalTranslationLapse: 0,
+    globalTranslationReceivedTime: 0
   },
   methods: {
     log: str => app.logs += str + '\n',
@@ -66,7 +75,7 @@ var app = new Vue({
 
     drawGraph: () => {
       let c = document.getElementById('graph').getContext("2d")
-      c.fillStyle = '#ffffff'
+      c.fillStyle = 'rgba(255, 255, 255, 1)'
       c.fillRect(0, 0, 500, 500)
       app.encoders_hist.forEach((snapshot, k) => {
         snapshot.forEach((pos, i) => {
@@ -86,6 +95,27 @@ var app = new Vue({
 
     exportFrameCorners: ()=>{
       download('frame_corners.txt',JSON.stringify(app.frame_corners))
+    },
+
+    drawLine: (ctx,x1,y1,x2,y2,color = '#000000')=>{
+      ctx.strokeStyle = color
+      ctx.beginPath()
+      ctx.moveTo(x1,y1)
+      ctx.lineTo(x2,y2)
+      ctx.stroke()
+    },
+
+    drawCorners: (corners, link)=>{
+      app.cornerCtx.fillStyle = 'rgba(255, 255, 255, 1)'
+      app.cornerCtx.fillRect(0, 0, 500, 500)
+      app.cornerCtx.fillStyle = '#ff0000'
+      corners.forEach(([x,y],k)=>{
+        if(link){
+          const [x0,y0] = (k%4 == 0 ? corners[k+3] : corners[k-1])
+          app.drawLine(app.cornerCtx, x0,y0,x,y)
+        }
+        app.cornerCtx.fillRect(x, y, 5, 5)
+      })
     }
   }
 })
@@ -100,4 +130,6 @@ window.onload = () => {
   app.ctx.fillStyle = "#000000"
   app.ctx.fillRect(0, 250, 500, 1)
   app.ctx.fillRect(250, 0, 1, 500)
+  app.cornerCanvas = document.getElementById('corners_canvas')
+  app.cornerCtx = app.cornerCanvas.getContext('2d')
 }

@@ -41,27 +41,38 @@ class Protocol {
     const app = this.app
     switch (pkg.type) {
       case Comm.pkg_type.kResponseEncoderById:
-        const id = pkg.data.readUInt8(0)
-        const count = pkg.data.readInt32LE(1)
-        console.log(id, count)
-        app.encoders[id] = count
+        this.responseEncoderByIdHandler(pkg)
         break
       case Comm.pkg_type.kResponseEncoders:
-        const encoders = [
-          pkg.data.readInt32LE(0),
-          pkg.data.readInt32LE(4),
-          pkg.data.readInt32LE(8)
-        ]
-        app.encoders_hist.push(encoders.map((e, k) => e - app.encoders[k]))
-        app.encoders = encoders
-        console.log(app.encoders)
-        app.drawGraph(app)
+        this.responseEncodersHandler(pkg)
         break
       case Comm.pkg_type.kFeedCorners:
-      console.log(this)
         this.feedCornersHandler(pkg)
         break
+      case Comm.pkg_type.kFeedGlobalRotation:
+        this.feedGlobalRotationHandler(pkg)
+        break
+      case Comm.pkg_type.kFeedGlobalTranslation:
+        this.fe
     }
+  }
+
+  responseEncoderByIdHandler(pkg){
+    const id = pkg.data.readUInt8(0)
+    const count = pkg.data.readInt32LE(1)
+    console.log(id, count)
+    this.app.encoders[id] = count
+  }
+
+  responseEncodersHandler(pkg){
+    const encoders = [
+      pkg.data.readInt32LE(0),
+      pkg.data.readInt32LE(4),
+      pkg.data.readInt32LE(8)
+    ]
+    this.app.encoders_hist.push(encoders.map((e, k) => e - app.encoders[k]))
+    this.app.encoders = encoders
+    this.app.drawGraph(app)
   }
 
   feedCornersHandler(pkg) {
@@ -80,6 +91,20 @@ class Protocol {
         this.app.frame_corners[frame_id].push([x,y])
       }
     }
+    this.app.drawCorners(this.app.frame_corners[frame_id], true)
+  }
+
+  feedGlobalRotationHandler(pkg){
+    this.app.globalRotation = pkg.data.readFloatLE(0)
+    this.app.globalRotationLapse = pkg.data.readUInt16LE(4)
+    this.app.globalRotationReceivedTime = Date.now()
+  }
+
+  feedGlobalTranslationHandler(pkg){
+    this.app.globalTranslationX = pkg.data.readInt32LE(0)
+    this.app.globalTranslationY = pkg.data.readInt32LE(4)
+    this.app.globalTranslationLapse = pkg.data.readUInt16LE(8)
+    this.app.globalTranslationReceivedTime = Date.now()
   }
 }
 

@@ -112,8 +112,8 @@ def getGlobalRotationWithDirection(prevg, prevl, currl, clockwise):
 
 
 def rotateTransform(p, co, si):
-    x = p[0] - 140
-    y = 280 - p[1]
+    x = p[0] - 95
+    y = 270 - p[1]
     x1 = co*x - si*y
     y1 = si*x + co*y
     return (int(x1), int(y1))

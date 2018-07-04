@@ -52,6 +52,12 @@
                 </div>
               </v-tab-item>
               <v-tab-item key="corners">
+                <canvas id="corners_canvas" width="500px" height="500px">
+
+                </canvas>
+                <textarea style="width:100%;height:100vh" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+                  {{JSON.stringify(Object.keys(frame_corners))}}
+                </textarea>
                 <v-btn @click="clearFrameCorners">Clear Received Corners</v-btn>
                 <v-btn @click="exportFrameCorners">Download Received Corners</v-btn>
               </v-tab-item>
@@ -61,7 +67,7 @@
               </v-tab-item> -->
             </v-tabs>
             <h3>Logs</h3>
-            <textarea style="width:100%;height:100vh">{{logs}}</textarea>
+            <textarea style="width:100%;height:100vh" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">{{logs}}</textarea>
             <v-btn @click="()=>protocol = null">reset comm</v-btn>
             <v-btn @click="()=>write('y')">send</v-btn>
           </div>

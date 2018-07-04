@@ -71,6 +71,7 @@ class Comm {
       //handle tail
       this.buffer.push(ch)
       this.buildBufferPackage(this.buffer)
+      this.port.flush()
       this.pkg_start = false;
       this.buffer = [];
     } else {
