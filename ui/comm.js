@@ -97,6 +97,7 @@ class Comm {
     } else if (pkg.type !== Comm.pkg_type.kACK) {
       this.sendPackageImmediate({ id: pkg.id, type: Comm.pkg_type.kACK, data: Buffer.alloc(0) })
     }
+    console.log('received package',pkg)
     this.handler(pkg)
   }
 }

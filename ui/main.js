@@ -8,12 +8,16 @@ const BrowserWindow = electron.BrowserWindow
 const path = require('path')
 const url = require('url')
 
+require('electron-reload')(__dirname, {
+  electron: require('${__dirname}/../../node_modules/electron')
+})
+
 // require('electron-reload')(__dirname)
 
-require('electron-reload')(__dirname, {
-  // Note that the path to electron may vary according to the main file
-  electron: require(`${__dirname}/node_modules/electron`)
-})
+// require('electron-reload')(__dirname, {
+//   // Note that the path to electron may vary according to the main file
+//   electron: require(`${__dirname}/node_modules/electron`)
+// })
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -70,3 +74,23 @@ app.on('activate', function () {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
+
+// function decounce(func, ms) {
+//   let ts;
+//   return function() {
+//       clearTimeout(ts);
+//       ts = setTimeout(() => func.apply(this, arguments), ms);
+//   };
+// }
+
+// if (process.env.NODE_ENV !== 'production') {
+//   const fs = require('fs');
+
+//   fs.watch(
+//       path.resolve('./electron-build'),
+//       { encoding: 'buffer' },
+//       decounce((eventType, filename) => {
+//           win && win.reload();
+//       }, 50)
+//   );
+// }

@@ -8,6 +8,7 @@ pkgid = 0
 var app = new Vue({
   el: '#app',
   data: {
+    console:console,
     protocol: null,
     str: 'hello world',
     ports: [],
@@ -22,6 +23,7 @@ var app = new Vue({
     logs: '',
     frame_corners:{},
     frame_chunks:{},
+    active: null
   },
   methods: {
     log: str => app.logs += str + '\n',
@@ -46,6 +48,8 @@ var app = new Vue({
         alert('please connect first')
         return false
       }
+      app.motor[motor_id]=Number(app.motor[motor_id])
+      app.log('setmotor '+ motor_id +' '+ app.motor[motor_id])
       console.log('setmotor', motor_id, app.motor[motor_id])
       app.protocol.setMotorById(motor_id, app.motor[motor_id])
     },

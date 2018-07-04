@@ -3,7 +3,7 @@ const Buffer = require('buffer').Buffer
 
 class Protocol {
   constructor(portName, app) {
-    this.comm = new Comm(portName, app, this.handler)
+    this.comm = new Comm(portName, app, this.handler.bind(this))
     this.app = app
   }
 
@@ -58,7 +58,8 @@ class Protocol {
         app.drawGraph(app)
         break
       case Comm.pkg_type.kFeedCorners:
-        feedCornersHandler(app, pkg)
+      console.log(this)
+        this.feedCornersHandler(pkg)
         break
     }
   }
@@ -66,7 +67,7 @@ class Protocol {
   feedCornersHandler(pkg) {
     console.log(pkg)
     const frame_id = pkg.data.readUInt16LE(0)
-    const chunk_id = pkg.data.readUInt8LE(2)
+    const chunk_id = pkg.data.readUInt8(2)
     if(!(frame_id in this.app.frame_corners)){
       this.app.frame_corners[frame_id] = []
       this.app.frame_chunks[frame_id] = {}
@@ -74,8 +75,8 @@ class Protocol {
     if (!(chunk_id in this.app.frame_chunks[frame_id])){
       this.app.frame_chunks[frame_id][chunk_id] = true
       for(let cursor = 3; cursor < pkg.data.length; cursor += 4){
-        const x = pkg.data.readUInt8LE(cursor)
-        const y = pkg.data.readUInt8LE(cursor + 2)
+        const x = pkg.data.readUInt8(cursor)
+        const y = pkg.data.readUInt8(cursor + 2)
         this.app.frame_corners[frame_id].push([x,y])
       }
     }

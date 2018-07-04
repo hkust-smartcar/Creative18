@@ -1,0 +1,15 @@
+{
+  "emeraldwalk.runonsave": {
+    "commands": [
+      // {
+      //   "cmd": "taskkill /F /IM electron.exe /T"
+      // },
+      // {
+      //   "cmd":"cd ${workspaceRoot} && npm start"
+      // }
+      {
+        // "cmd": "cd ${workspaceRoot} && auto.bat"
+      }
+    ]
+  }
+}
