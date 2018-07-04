@@ -9,7 +9,7 @@ from PIL import Image
 import json
 
 
-path = "onCar.jpg"
+path = "tilted.jpg"
 newsize = (200,240)
 src = [[43,34], [111,35], [22,84], [128,86]]
 tgt = [[50,100],[140,100],[50,190],[140,190]]

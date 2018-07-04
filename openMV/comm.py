@@ -53,7 +53,7 @@ class Comm:
         cs %= 256
         #print("pkg_len", length)
         buf = bytes([0xAA, length, pkg_type, pkgid]) + data + bytes([cs, 0xFF])
-        print('[SI]send immediate', buf, length, pkg_type, pkgid, cs, "[/SI]")
+        # print('[SI]send immediate', buf, length, pkg_type, pkgid, cs, "[/SI]")
         self.uart.write(buf)
 
     def period(self):

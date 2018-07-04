@@ -27,7 +27,7 @@ def feedCorners(frame_id, corners):
     byte = b''
     for k, p in enumerate(corners):
         byte += ustruct.pack("<HH", p[0], p[1])
-        if k % 23 == 22:
+        if k % 10 == 9:
             comm.sendPackageImmediate({
                 "type": PKGTYPE["kFeedCorners"],
                 "id": comm.getPkgId(),

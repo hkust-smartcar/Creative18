@@ -57,8 +57,8 @@ def get_length(img, rects, threshold):
             p1 = mapToWorld(p1)
             p2 = mapToWorld(c[i-1])
             local_length = dist(p1, p2)
-            if(local_length < 45 or local_length > 55):
-                break
+            # if(local_length < 45 or local_length > 55):
+            #     break
             vote(dist_votes, local_length, threshold)
     length = getHighestVote(dist_votes, length)
     #print('length,', length)
