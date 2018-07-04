@@ -71,7 +71,7 @@ while(True):
     #calculate the rotation
     dx, theta = get_rotation(img, rects, length, 2)
     gRotation = getGlobalRotation(gRotation, lRotation, theta)
-    protocol.feedGlobalRotation(gRotation, pyb.millis() - startTime)
+    protocol.feedGlobalRotation(gRotation, pyb.millis() - startTime,frame_id)
     lRotation = theta
     print('deg', deg(gRotation), 'theta', theta)
 
