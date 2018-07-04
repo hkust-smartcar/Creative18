@@ -65,7 +65,7 @@ while(True):
             img.draw_line(p[0], p[1], p_[0], p_[1], 5, color=(255, 255, 0))
     # try:
     length = get_length(img, rects, 2)
-    print('p_length',length)
+    #print('p_length',length)
     if(length == 0):
         continue
     rects = getGoodRects(rects, length, 10)
@@ -74,7 +74,7 @@ while(True):
     protocol.feedGlobalRotation(gRotation, pyb.millis() - startTime)
     #gRotation = getGlobalRotationWithDirection(gRotation,lRotation,theta,False)
     lRotation = theta
-    # print('deg', deg(gRotation), 'theta', theta)
+    print('deg', deg(gRotation), 'theta', theta)
     # except Exception as e:
     # print(e)
     # continue

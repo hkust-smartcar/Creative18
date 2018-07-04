@@ -87,17 +87,17 @@ unit: radian
 
 
 def getGlobalRotation(prevg, prevl, currl):
-    currg = prevg - prevl + currl
+    currg = prevg + prevl - currl
     # if (True or abs(prevl) > pi/4 and abs(currl) > pi/4):
     if(sgn(prevl) == 1 and sgn(currl) == -1):
         #prev is positive, current is negative
         if(abs(prevl - currl) > pi/4):
-            currg += pi/2
+            currg -= pi/2
     elif(sgn(prevl) == -1 and sgn(currl) == 1):
         #prev is negative, current is positive
         if(abs(prevl - currl) > pi/4):
-            currg -= pi/2
-    return currg
+            currg += pi/2
+    return currg % (2*pi)
 
 
 def getGlobalRotationWithDirection(prevg, prevl, currl, clockwise):
