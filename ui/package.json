@@ -1,11 +1,16 @@
 {
   "name": "creative-ui",
+  "productName":"CreativeUI",
   "version": "1.0.1",
   "description": "A minimal Electron application with node serialport",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "install": "electron-rebuild"
+    "install": "electron-rebuild",
+    "build-win": "electron-packager ./ CreativeUi --all --out=release-builds ./builds/CreativeUi --overwrite --asar --prune=true --platform=win32 --arch=ia32 --icon=./icon2.ico",
+    "build-mac": "electron-packager ./ CreativeUi --all --out=release-builds ./builds/CreativeUi --overwrite --asar --prune=true --platform=darwin --arch=x64 --icon=./icon2.icns",
+    "build-linux": "electron-packager ./ CreativeUi --all --out=release-builds ./builds/CreativeUi --overwrite --asar --prune=true --platform=linux --arch=x64 --icon=./icon2.png",
+    "build": "npm run build-win && npm run build-mac && npm run build-linux"
   },
   "repository": {
     "type": "git",
@@ -21,12 +26,13 @@
   "author": "GitHub",
   "license": "CC0-1.0",
   "devDependencies": {
-    "electron": "^1.4.1",
+    "electron": "^1.8.7",
+    "electron-packager": "^12.1.0",
     "electron-prebuilt-compile": "2.0.4",
     "electron-rebuild": "^1.7.3"
   },
   "dependencies": {
-    "data-table": "^2.0.0",
+    "electron": "^1.8.7",
     "electron-reload": "^1.2.2",
     "serialport": "^4.0.7"
   }
