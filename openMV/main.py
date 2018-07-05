@@ -78,11 +78,14 @@ while(True):
     #display the rotations
     [x0, y0] = mapToImage([100, 200])
     [x1, y1] = mapToImage([100-dx, 200-length])
-    img.draw_line(x0, y0, x1, y1, color=(255, 0, 0))
+    img.draw_line(x0, y0, x1, y1, color=(255, 255, 255), thickness=5)
+    img.draw_line(x0, y0, x1, y1, color=(0, 0, 0), thickness=2)
 
     [x0, y0] = [70, 60]
     [x1, y1] = [70-int(length*cos(gRotation)), 60-int(length*sin(gRotation))]
-    img.draw_line(x0, y0, x1, y1, color=(0, 255, 0))
+    img.draw_line(x0, y0, x1, y1, color=(255, 255, 255), thickness=5)
+    img.draw_line(x0, y0, x1, y1, color=(0, 0, 0), thickness=2)
+    
 
     #display the good rects and push corners
     for k, r in enumerate(rects):
@@ -116,5 +119,8 @@ while(True):
     # print('local displacement',localDisplacement)
 
     protocol.feedCorners(frame_id,corners)
+
+    img.draw_string(0,0,str(frame_id),scale=2,color=(255,255,255))
+    img.draw_string(0,0,str(frame_id),scale=2,color=(0,0,0))
 
     frame_id += 1

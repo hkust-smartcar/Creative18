@@ -37,7 +37,7 @@ using namespace libsc;
 using namespace libbase::k60;
 
 int32_t encoder_value0 = 0,encoder_value1 = 0,encoder_value2 = 0;
-uint16_t servoAngle = 0, servoAngleImg;
+uint16_t servoAngle0 = 0, servoAngleImg0 = -1, servoAngle1 = 0, servoAngleImg1 = -1;
 int32_t motorSpeed = 0, motorSpeedImg = 0;
 int car = 0;
 bool yo = false;
@@ -71,7 +71,8 @@ void master(){
 	Joystick joystick(joystick_config);
 
 	DebugConsole console(&joystick,&lcd,&writer,10);
-	console.PushItem("servo_angle",&servoAngle,1);
+	console.PushItem("servo_angle0",&servoAngle0,1);
+	console.PushItem("servo_angle1",&servoAngle1,1);
 	console.PushItem("encoder0",&encoder_value0,float(0.0));
 	console.PushItem("encoder1",&encoder_value1,float(0.0));
 	console.PushItem("encoder2",&encoder_value2,float(0.0));
@@ -88,8 +89,8 @@ void master(){
 
 	    encoder_value0 =wheelbase.EncoderGetCount(0);
 	    encoder_value1 =wheelbase.EncoderGetCount(1);
-		encoder_value2 =wheelbase.EncoderGetCount(2);
-		wheelbase.UpdateEncoders();
+//		encoder_value2 =wheelbase.EncoderGetCount(2);
+//		wheelbase.UpdateEncoders();
 
 	    if(System::Time()>nextRender){
 	    	led0.Switch();
@@ -105,11 +106,15 @@ void master(){
 			wheelbase.MotorSetPower(2,motorSpeed);
 	    }
 
-	    if(servoAngleImg != servoAngle){
-	    	servoAngleImg = servoAngle;
-			wheelbase.ServoSetDegree(0,servoAngle);
-			wheelbase.ServoSetDegree(1,servoAngle);
+	    if(servoAngleImg0 != servoAngle0){
+	    	servoAngleImg0 = servoAngle0;
+			wheelbase.ServoSetDegree(0,servoAngle0);
 	    }
+
+	    if(servoAngleImg1 != servoAngle1){
+			servoAngleImg1 = servoAngle1;
+			wheelbase.ServoSetDegree(1,servoAngle1);
+		}
 	}
 }
 
@@ -126,7 +131,7 @@ void slave(){
 	while(1){
 		if(System::Time()>nextRender){
 			wheelbase.UpdateEncoders();
-
+			wheelbase.UpdateEncoderToRemote();
 			led0.Switch();
 			nextRender+=250;
 		}

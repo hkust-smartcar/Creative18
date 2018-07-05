@@ -208,7 +208,9 @@ Super->Master: kACK
 
 `float` rotation angle
 
-`uint16_t` time_spent_on_calculation
+`uint16_t` lapse (time_spent_on_calculation)
+
+`uint16_t` frame_id
 
 ###### response
 
@@ -226,7 +228,9 @@ Master->Super: kACK
 
 `int32_t` `x_translation, y_translation`
 
-`uint16_t` time_spent_on_calculation
+`uint16_t` lapse (time_spent_on_calculation)
+
+`uint16_t` frame_id
 
 ###### return:
 
@@ -276,4 +280,4 @@ Slave -> Master: kACK
 Note over Slave: servo0 set degree
 ```
 
-##### 
+##### 11
