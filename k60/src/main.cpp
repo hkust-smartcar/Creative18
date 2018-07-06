@@ -15,6 +15,7 @@
 #include "debug_console.h"
 #include "test.h"
 #include "wheelbase.h"
+#include "scheduler.h"
 
 namespace libbase
 {
@@ -89,8 +90,8 @@ void master(){
 
 	    encoder_value0 =wheelbase.EncoderGetCount(0);
 	    encoder_value1 =wheelbase.EncoderGetCount(1);
-//		encoder_value2 =wheelbase.EncoderGetCount(2);
-//		wheelbase.UpdateEncoders();
+		encoder_value2 =wheelbase.EncoderGetCount(2);
+		wheelbase.UpdateEncoders();
 
 	    if(System::Time()>nextRender){
 	    	led0.Switch();
@@ -179,15 +180,31 @@ void test(){
 //	}
 }
 
+void testScheduler(){
+	Led::Config led_config;
+	led_config.id = 0;
+	Led led0(led_config);
+	led_config.id = 1;
+	Led led1(led_config);
+	Scheduler scheduler(0,75000*100);
+	int x = scheduler.SetInterval([&]{
+		led0.Switch();
+	},250);
+	scheduler.ClearInterval(x);
+	while(1);
+}
+
 int main(void)
 {
 	System::Init();
 
 
 //	test();
-	master();
+//	master();
 //	slave();
 //	test();
+
+	testScheduler();
 
 	return 0;
 }
