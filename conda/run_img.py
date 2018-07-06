@@ -9,11 +9,11 @@ from PIL import Image
 from jp import *
 from pj import *
 
-path = "Capture2.jpg"
+path = "img/test2/test2.mp4_frame0.jpg"
 jpgfile = Image.open(path)
 
 oldsize = (160,120)
-fixedsize = (280,240)
+fixedsize = (200,250)
 fixedfile = Image.new('RGB',fixedsize)
 
 def pm2(h,s):
