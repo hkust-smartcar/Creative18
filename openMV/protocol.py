@@ -47,3 +47,10 @@ def feedGlobalRotation(angle, time, frame_id):
         "id": comm.getPkgId(),
         "data": ustruct.pack("<fHH",angle, time, frame_id)
     })
+
+def feedLocalRotation(angle, time, frame_id):
+    comm.sendPackageImmediate({
+        "type": PKGTYPE["kFeedLocalRotation"],
+        "id": comm.getPkgId(),
+        "data": ustruct.pack("<fHH",angle, time, frame_id)
+    })
