@@ -8,11 +8,13 @@
 #include "test.h"
 
 Test::Test():lcd(GetLcdConfig()),writer(GetTypeWriterConfig()){
-pProtocol = new Protocol(nullptr,this);
+	pScheduler = new Scheduler(1, 75000*250);
+	pProtocol = new Protocol(pScheduler,this);
 }
 
 Test::~Test(){
 	delete pProtocol;
+	delete pScheduler;
 }
 
 void Test::test1(){

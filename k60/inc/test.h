@@ -11,6 +11,7 @@
 #include <libsc/st7735r.h>
 #include <libsc/lcd_typewriter.h>
 #include "protocol.h"
+#include "scheduler.h"
 
 using namespace libsc;
 
@@ -28,6 +29,7 @@ private:
 	Protocol* pProtocol;
 	St7735r lcd;
 	LcdTypewriter writer;
+	Scheduler* pScheduler;
 
 	St7735r::Config GetLcdConfig();
 
