@@ -32,11 +32,17 @@ void Protocol::Handler(const Bluetooth::Package& pkg){
 	case Bluetooth::PkgType::kRequestEncoder:
 		RequestEncoderHandler(pkg);
 		break;
+	case Bluetooth::PkgType::kResponseEncoderById:
+		ResponseEncoderByIdHandler(pkg);
+		break;
 	case Bluetooth::PkgType::kResponseEncoder:
 		ResponseEncoderHandler(pkg);
 		break;
 	case Bluetooth::PkgType::kRequestSetServo:
 		RequestSetServoHandler(pkg);
+		break;
+	case Bluetooth::PkgType::kRequestAutoFeedEncoders:
+		RequestAutoFeedEncodersHandler(pkg);
 		break;
 	}
 }
@@ -57,10 +63,23 @@ uint8_t Protocol::ResponseEncoder(int32_t count){
 	return m_bt.QueuePackage({Bluetooth::PkgType::kResponseEncoder,0,data});
 }
 
+uint8_t Protocol::ResponseEncoderById(uint8_t id, int32_t count){
+	vector<Byte> data(5,0);
+	memcpy(&*data.begin(), &id, 1);
+	memcpy(&*data.begin()+1, &count, 4);
+	return m_bt.QueuePackage({Bluetooth::PkgType::kResponseEncoderById,0,data});
+}
+
 uint8_t Protocol::RequestSetServo(uint16_t degree){
 	vector<Byte> data(2,0);
 	memcpy(&*data.begin(),&degree,2);
 	return m_bt.QueuePackage({Bluetooth::PkgType::kRequestSetServo,0,data});
+}
+
+uint8_t Protocol::RequestAutoFeedEncoders(uint16_t interval){
+	vector<Byte> data(2,0);
+	memcpy(&*data.begin(),&interval,2);
+	return m_bt.QueuePackage({Bluetooth::PkgType::kRequestAutoFeedEncoders,0,data});
 }
 
 void Protocol::RequestSetMotorHandler(const Bluetooth::Package& pkg){
@@ -130,5 +149,36 @@ void Protocol::RequestSetServoHandler(const Bluetooth::Package& pkg){
 	}
 	if(pWheelbase){
 		pWheelbase->ServoSetDegree(0,degree);
+	}
+}
+
+void Protocol::ResponseEncoderByIdHandler(const Bluetooth::Package& pkg){
+//	uint8_t id;
+	int32_t count;
+//	memcpy(&id, &*pkg.data.begin(),1);
+	memcpy(&count, &*pkg.data.begin()+1,4);
+	if(pWheelbase){
+		//since it is sent from slave, it is assumed to be id 2 for master
+		pWheelbase->encoder_counts[2] = count;
+	}
+}
+
+void Protocol::RequestAutoFeedEncodersHandler(const Bluetooth::Package& pkg){
+	uint16_t interval;
+	memcpy(&interval, &*pkg.data.begin(),2);
+	if(pWheelbase){
+		//clear the previous auto feed job
+		pWheelbase->pScheduler->ClearInterval(auto_feed_encoder_job_id);
+
+		//non zero interval reschedule
+		if(interval){
+			auto_feed_encoder_job_id = pWheelbase->pScheduler->SetInterval([&]{
+				int32_t encoder_img = pWheelbase->encoder_counts[0];
+				pWheelbase->UpdateEncoders();
+				if(encoder_img != pWheelbase->encoder_counts[0]){
+					ResponseEncoder(pWheelbase->encoder_counts[0]);
+				}
+			},interval);
+		}
 	}
 }

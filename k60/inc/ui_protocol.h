@@ -72,10 +72,12 @@ public:
 	void RequestEncodersHandler(const Bluetooth::Package& pkg);
 	void FeedGlobalRotationHandler(const Bluetooth::Package& pkg);
 	void FeedGlobalTranslationHandler(const Bluetooth::Package& pkg);
+	void RequestAutoFeedEncodersHandler(const Bluetooth::Package& pkg);
 
 private:
 	bool recievedPackageId[10];
 	uint8_t filteredRecievedPackageSumByType[10];
+	uint16_t auto_feed_encoder_job_id = -1;
 };
 
 

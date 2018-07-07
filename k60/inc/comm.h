@@ -59,7 +59,7 @@ public:
 		kFeedGlobalRotation = 0x0A,
 		kFeedGlobalTranslation = 0x0B,
 		kRequestSetServo = 0x0C,
-		kRequestAutoFeedEncoder = 0x0D,
+		kRequestAutoFeedEncoders = 0x0D,
 		kFeedCorners = 0xA0,
 		kFeedLocalRotation = 0xA1;
 	};

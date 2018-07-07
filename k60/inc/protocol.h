@@ -69,7 +69,9 @@ public:
 	//when requested, use the response encoder function
 	uint8_t RequestEncoder();
 	uint8_t ResponseEncoder(int32_t count);
+	uint8_t ResponseEncoderById(uint8_t id, int32_t count);
 	uint8_t RequestSetServo(uint16_t degree);
+	uint8_t RequestAutoFeedEncoders(uint16_t interval);
 	int32_t AwaitRequestEncoder(LcdTypewriter* t = nullptr);
 
 	void Handler(const Bluetooth::Package& pkg);
@@ -77,13 +79,16 @@ public:
 	void RequestSetMotorHandler(const Bluetooth::Package& pkg);
 	void RequestEncoderHandler(const Bluetooth::Package& pkg);
 	void ResponseEncoderHandler(const Bluetooth::Package& pkg);
+	void ResponseEncoderByIdHandler(const Bluetooth::Package& pkg);
 	void RequestSetServoHandler(const Bluetooth::Package& pkg);
+	void RequestAutoFeedEncodersHandler(const Bluetooth::Package& pkg);
 
 	int32_t GetEncoderCount(){return encoder_count;}
 
 private:
 	bool recievedPackageId[10];
 	uint8_t filteredRecievedPackageSumByType[10];
+	uint16_t auto_feed_encoder_job_id = -1;
 
 	bool waiting_encoder = false;
 	int32_t encoder_count = 0;

@@ -44,6 +44,9 @@ void UiProtocol::Handler(const Bluetooth::Package& pkg){
 	case Bluetooth::PkgType::kFeedGlobalTranslation:
 		FeedGlobalTranslationHandler(pkg);
 		break;
+	case Bluetooth::PkgType::kRequestAutoFeedEncoders:
+		RequestAutoFeedEncodersHandler(pkg);
+		break;
 	}
 }
 
@@ -129,5 +132,28 @@ void UiProtocol::FeedGlobalTranslationHandler(const Bluetooth::Package& pkg){
 		memcpy(&pWheelbase->globalTranslationY, &*pkg.data.begin() + 4, 4);
 		memcpy(&pWheelbase->globalTranslationLapse, &*pkg.data.begin() + 8, 2);
 		pWheelbase->globalTranslationReceivedTime = System::Time();
+	}
+}
+
+void UiProtocol::RequestAutoFeedEncodersHandler(const Bluetooth::Package& pkg){
+	uint16_t interval;
+	memcpy(&interval, &*pkg.data.begin(),2);
+	if(pWheelbase){
+		//clear the previous auto feed job
+		pWheelbase->pScheduler->ClearInterval(auto_feed_encoder_job_id);
+
+		//non zero interval reschedule
+		if(interval){
+			auto_feed_encoder_job_id = pWheelbase->pScheduler->SetInterval([&]{
+				int32_t encoder_img[3];
+				memcpy(encoder_img,pWheelbase->encoder_counts,12);
+				pWheelbase->UpdateEncoders();
+				for(int i=0; i<3; i++){
+					if(encoder_img[i] != pWheelbase->encoder_counts[i]){
+						ResponseEncoderById(i,pWheelbase->encoder_counts[i]);
+					}
+				}
+			},interval);
+		}
 	}
 }
