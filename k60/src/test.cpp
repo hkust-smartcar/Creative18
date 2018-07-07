@@ -8,7 +8,7 @@
 #include "test.h"
 
 Test::Test():lcd(GetLcdConfig()),writer(GetTypeWriterConfig()){
-pProtocol = new Protocol(this);
+pProtocol = new Protocol(nullptr,this);
 }
 
 Test::~Test(){

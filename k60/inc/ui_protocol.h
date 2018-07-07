@@ -26,16 +26,17 @@ public:
 	Bluetooth m_bt;
 	Test* test;
 	Wheelbase* pWheelbase;
+	Scheduler* pScheduler;
 
-	UiProtocol():m_bt(0,2), test(nullptr){
+	UiProtocol(Scheduler* pScheduler):m_bt(0,pScheduler), test(nullptr), pWheelbase(nullptr), pScheduler(pScheduler){
 		Init();
 	}
 
-	UiProtocol(Test* t):m_bt(0,2), test(t){
+	UiProtocol(Scheduler* pScheduler, Test* t):m_bt(0,pScheduler), test(t), pWheelbase(nullptr){
 		Init();
 	}
 
-	UiProtocol(Wheelbase* wb):m_bt(0,2), pWheelbase(wb){
+	UiProtocol(Scheduler* pScheduler, Wheelbase* wb):m_bt(0,pScheduler), test(nullptr), pWheelbase(wb){
 		Init();
 	}
 

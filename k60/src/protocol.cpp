@@ -94,7 +94,9 @@ void Protocol::RequestEncoderHandler(const Bluetooth::Package& pkg){
 void Protocol::ResponseEncoderHandler(const Bluetooth::Package& pkg){
 	waiting_encoder = false;
 	memcpy(&encoder_count, &*pkg.data.begin(),4);
-	encoder_totoal_count+=encoder_count;
+	if(pWheelbase){
+		pWheelbase->encoder_counts[2] = encoder_count;
+	}
 	if(test != nullptr){
 //		char c[20];
 //		sprintf(c,"%d obt en %d", filteredRecievedPackageSumByType[pkg.type], count);

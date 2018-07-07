@@ -13,6 +13,7 @@
 
 #include "libsc/lcd_typewriter.h"
 
+#include "scheduler.h"
 #include "bluetooth.h"
 #include "test.h"
 #include "wheelbase.h"
@@ -29,16 +30,17 @@ public:
 	Bluetooth m_bt;
 	Test* test;
 	Wheelbase* pWheelbase;
+	Scheduler* pScheduler;
 
-	Protocol():m_bt(1,1), test(nullptr), pWheelbase(nullptr){
+	Protocol(Scheduler* pScheduler):m_bt(1,pScheduler), test(nullptr), pWheelbase(nullptr), pScheduler(pScheduler){
 		Init();
 	}
 
-	Protocol(Test* t):m_bt(1,1), test(t), pWheelbase(nullptr){
+	Protocol(Scheduler* pScheduler, Test* t):m_bt(1,pScheduler), test(t), pWheelbase(nullptr){
 		Init();
 	}
 
-	Protocol(Wheelbase* wb):m_bt(1,1), test(nullptr), pWheelbase(wb){
+	Protocol(Scheduler* pScheduler, Wheelbase* wb):m_bt(1,pScheduler), test(nullptr), pWheelbase(wb){
 		Init();
 	}
 
@@ -77,7 +79,6 @@ public:
 	void ResponseEncoderHandler(const Bluetooth::Package& pkg);
 	void RequestSetServoHandler(const Bluetooth::Package& pkg);
 
-	int32_t GetEncoderTotolCount(){return encoder_totoal_count;}
 	int32_t GetEncoderCount(){return encoder_count;}
 
 private:
@@ -86,7 +87,6 @@ private:
 
 	bool waiting_encoder = false;
 	int32_t encoder_count = 0;
-	int32_t encoder_totoal_count = 0;
 };
 
 

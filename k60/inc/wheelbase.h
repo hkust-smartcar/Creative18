@@ -11,13 +11,14 @@
 #include <libsc/st7735r.h>
 #include <libsc/lcd_typewriter.h>
 #include <libsc/dir_motor.h>
-#include <libsc/dir_encoder.h>
+#include <libsc/ab_encoder.h>
 #include <libsc/servo.h>
 
 #include <string>
 
 #include "protocol.h"
 #include "ui_protocol.h"
+#include "scheduler.h"
 
 using namespace libsc;
 
@@ -47,6 +48,7 @@ private:
 
 	Protocol* pProtocol;
 	UiProtocol* pUiProtocol;
+	Scheduler* pScheduler;
 //	St7735r lcd;
 //	LcdTypewriter writer;
 
@@ -60,8 +62,8 @@ private:
 		return config;
 	}
 
-	DirEncoder::Config GetEncoderConfig(uint8_t id){
-		DirEncoder::Config config;
+	AbEncoder::Config GetEncoderConfig(uint8_t id){
+		AbEncoder::Config config;
 		config.id = id;
 		return config;
 	}
@@ -76,7 +78,7 @@ private:
 	}
 
 	DirMotor motor0, motor1;
-	DirEncoder encoder0, encoder1;
+	AbEncoder encoder0, encoder1;
 	Servo servo;
 
 //	int32_t prev_encoder2_count = 0;
