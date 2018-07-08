@@ -52,8 +52,15 @@ class Protocol {
       case Comm.pkg_type.kFeedGlobalRotation:
         this.feedGlobalRotationHandler(pkg)
         break
+      case Comm.pkg_type.kFeedLocalRotation:
+        this.feedLocalRotationHandler(pkg)
+        break
       case Comm.pkg_type.kFeedGlobalTranslation:
         this.feedGlobalTranslationHandler(pkg)
+        break
+      case Comm.pkg_type.kFeedLocalTranslation:
+        this.feedLocalTranslationHandler(pkg)
+        break
     }
   }
 
@@ -104,6 +111,15 @@ class Protocol {
     this.updateFrame(frame_id)
   }
 
+  feedLocalRotationHandler(pkg){
+    this.app.localRotation = pkg.data.readFloatLE(0)
+    this.app.localRotationLapse = pkg.data.readUInt16LE(4)
+    const frame_id = pkg.data.readUInt16LE(6)
+    this.app.localRotations[frame_id] = this.app.localRotation
+    this.app.localRotationReceivedTime = Date.now()
+    this.updateFrame(frame_id)
+  }
+
   feedGlobalTranslationHandler(pkg){
     this.app.globalTranslationX = pkg.data.readInt32LE(0)
     this.app.globalTranslationY = pkg.data.readInt32LE(4)
@@ -111,6 +127,16 @@ class Protocol {
     const frame_id = pkg.data.readUInt16LE(10)
     this.app.globalTranslations[frame_id] = [this.app.globalTranslationX,this.app.globalTranslationY]
     this.app.globalTranslationReceivedTime = Date.now()
+    this.updateFrame(frame_id)
+  }
+
+  feedLocalTranslationHandler(pkg){
+    this.app.localTranslationX = pkg.data.readInt32LE(0)
+    this.app.localTranslationY = pkg.data.readInt32LE(4)
+    this.app.localTranslationLapse = pkg.data.readUInt16LE(8)
+    const frame_id = pkg.data.readUInt16LE(10)
+    this.app.localTranslations[frame_id] = [this.app.localTranslationX,this.app.localTranslationY]
+    this.app.localTranslationReceivedTime = Date.now()
     this.updateFrame(frame_id)
   }
 

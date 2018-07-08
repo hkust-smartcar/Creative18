@@ -33,6 +33,15 @@ var app = new Vue({
     globalTranslationY: 0,
     globalTranslationLapse: 0,
     globalTranslationReceivedTime: 0,
+    localRotations:{},
+    localRotation: 0,
+    localRotationLapse: 0,
+    localRotationReceivedTime: 0,
+    localTranslations:{},
+    localTranslationX: 0,
+    localTranslationY: 0,
+    localTranslationLapse: 0,
+    localTranslationReceivedTime: 0,
     last_frame_id:0,
     last_frame_receive_time:0,
     fps:'N/A'
@@ -100,25 +109,42 @@ var app = new Vue({
       download('frame_corners.txt',JSON.stringify(app.frame_corners))
     },
 
-    clearFrameRotations: ()=>{
+    clearFrameGlobalRotations: ()=>{
       app.globalRotations = {}
     },
 
-    exportFrameRotations: ()=>{
+    exportFrameGlobalRotations: ()=>{
       download('frame_rotations.txt',JSON.stringify(app.globalRotations))
     },
 
-    clearFrameTranslations: ()=>{
+    clearFrameGlobalTranslations: ()=>{
       app.globalTranslations = {}
     },
 
-    exportFrameTranslations: ()=>{
+    exportFrameGlobalTranslations: ()=>{
       download('frame_translations.txt',JSON.stringify(app.globalTranslations))
     },
 
+    clearFrameLocalRotations: ()=>{
+      app.localRotations = {}
+    },
+
+    exportFrameLocalRotations: ()=>{
+      download('frame_local_rotations.txt',JSON.stringify(app.localRotations))
+    },
+
+    clearFrameLocalTranslations: ()=>{
+      app.localTranslations = {}
+    },
+
+    exportFrameLocalTranslations: ()=>{
+      download('frame_local_translations.txt',JSON.stringify(app.localTranslations))
+    },
     clearFrameDetails: ()=>{
       app.globalTranslations = {}
       app.globalRotations = {}
+      app.localTranslations = {}
+      app.localRotations = {}
       app.frame_corners = {}
       app.frame_chunks = {}
     },
@@ -126,9 +152,11 @@ var app = new Vue({
     exportFrameDetails: ()=>{
       details = {}
       download('frame_details.txt',JSON.stringify({
-        corners:app.corners,
-        rotations:app.globalRotations,
-        translations:app.globalTranslations
+        corners: app.corners,
+        rotations: app.globalRotations,
+        local_rotations: app.localRotations,
+        translations: app.globalTranslations,
+        local_translation: app.localTranslations
       }))
     },
 
@@ -151,7 +179,9 @@ var app = new Vue({
         }
         app.cornerCtx.fillRect(x, y, 5, 5)
       })
-    }
+    },
+
+    toDeg: rad => rad*360/Math.PI
   }
 })
 
