@@ -89,6 +89,11 @@ void Wheelbase::TestOpenMVProtocol(){
 //	writer.WriteString(str);
 }
 
+void Wheelbase::TestScheduler(){
+	pProtocol->RequestAutoFeedEncoders(10);
+//	pUiProtocol->RequestMove(0,0);
+}
+
 //St7735r::Config Wheelbase::GetLcdConfig(){
 //	St7735r::Config lcd_config;
 //	lcd_config.orientation = 0;

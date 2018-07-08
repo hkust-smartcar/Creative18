@@ -11,6 +11,7 @@
 #include <libsc/st7735r.h>
 #include <libsc/lcd_typewriter.h>
 #include <libsc/dir_motor.h>
+//#include <libsc/dir_encoder.h>
 #include <libsc/ab_encoder.h>
 #include <libsc/servo.h>
 
@@ -43,8 +44,10 @@ public:
 
 	void TestOpenMVProtocol();
 
+	void TestScheduler();
+
 	bool flag = false;
-private:
+//private:
 
 	Protocol* pProtocol;
 	UiProtocol* pUiProtocol;
@@ -68,6 +71,12 @@ private:
 		return config;
 	}
 
+//	DirEncoder::Config GetEncoderConfig(uint8_t id){
+//		DirEncoder::Config config;
+//		config.id = id;
+//		return config;
+//	}
+
 	Servo::Config GetServoConfig(uint8_t id){
 		Servo::Config config;
 		config.id = id;
@@ -79,6 +88,7 @@ private:
 
 	DirMotor motor0, motor1;
 	AbEncoder encoder0, encoder1;
+//	DirEncoder encoder0, encoder1;
 	Servo servo;
 
 //	int32_t prev_encoder2_count = 0;

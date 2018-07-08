@@ -194,17 +194,32 @@ void testScheduler(){
 	while(1);
 }
 
+void testUiProtocolWithScheduler(){
+	Wheelbase wb;
+	wb.TestScheduler();
+	Led::Config led_config;
+	led_config.id = 0;
+	Led led0(led_config);
+	while(1){
+//		wb.UpdateEncoders();
+		wb.encoder_counts[0]+=100;
+		led0.Switch();
+		System::DelayMs(250);
+	}
+}
+
 int main(void)
 {
 	System::Init();
 
 
 //	test();
-//	master();
+	master();
 //	slave();
 //	test();
 
-	testScheduler();
+//	testScheduler();
+//	testUiProtocolWithScheduler();
 
 	return 0;
 }

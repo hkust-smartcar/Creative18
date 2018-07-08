@@ -1,12 +1,33 @@
 # Creative18
 
-## Specifications
+## Software Specifications
 
-### I. Coodinate System
+### I. Data Structure
+
+#### A. k60
+
+```mermaid
+graph TD;
+id1[Encoders and motors]
+wheelbase-->|contains|id1
+wheelbase-->|contains|protocol
+wheelbase-->|contains|uiprotocol
+protocol-->|contains|wheelbase
+uiprotocol-->|contains|wheelbase
+wheelbase-->|contains|scheduler
+protocol-->|contains|bluetooth
+uiprotocol-->|contains|bluetooth
+scheduler-->|used by|bluetooth
+bluetooth-->|extends|comm
+```
+
+
+
+### II. Coordinate System
 
 Global Origin at top left corner of game field, unit mm (integer), x-axis right going, y axis down going. Global rotational angle defined by x-axis to y-axis direction, in radian(float)
 
-### II. Protocol
+### III. Protocol
 
 #### A. Constants
 
@@ -29,7 +50,9 @@ kResponseEncoders = 0x09,
 kFeedGlobalRotation = 0x0A,
 kFeedGlobalTranslation = 0x0B,
 kRequestSetServo = 0x0C,
-kFeedCorners = 0xA0
+kRequestAutoFeedEncoders = 0x0D,
+kFeedCorners = 0xA0,
+kFeedLocalRotation = 0xA1,
 ```
 
 #### B. Package structure
@@ -65,7 +88,7 @@ OpenMV
 
 Ui
 
-#### 2. Flow
+#### 2. Communication Flow
 
 - the `sendPackageImmediate` function send the package only once and will not take care the acknowledge
 - the `queuePackage` function will keep sending the package until corresponding acknowledgement is received. It is done by pushing the package to a queue, 
@@ -76,7 +99,7 @@ Ui
   - If the package is not an acknowledgement package, it will send an acknowledgement package for that; 
   - if the package is an acknowledgement package, it will remove corresponding package from queue
 
-### D. Protocol
+### D. Protocol Details
 
 ##### 1. Motor Control
 
@@ -280,4 +303,54 @@ Slave -> Master: kACK
 Note over Slave: servo0 set degree
 ```
 
-##### 11
+##### 11. Feed Local Rotation
+
+###### data
+
+`float` rotation angle
+
+`uint16_t` lapse (time_spent_on_calculation)
+
+`uint16_t` frame_id
+
+###### response
+
+`none`
+
+```sequence
+Note over Super: new frame
+Super->Master: kFeedLocalRotation(angle,time,frame_id)
+Master->Super: kACK
+```
+
+##### 12. Request Auto Feed Encoders
+
+###### data
+
+`uint16_t` interval in ms for checking encoders, send when encoder value is changed, 0 for canceling the auto feed. If an auto feed is already started in the protocol, it will overwrite the original one
+
+###### response
+
+`none`
+
+```sequence
+Ui->Master: kRequestAutoFeedEncoders(interval)
+Master->Ui: kACK
+Note over Master: (general behavior of this protocol)
+Master->Slave: kRequestAutoFeedEncoders(interval)
+Slave->Master: kACK
+Note over Slave: For each interval encoder value changed
+Slave->Master: kResponseEncoder(count)
+Master->Slave: kACK
+```
+
+``` sequence
+Title: general behavior
+Any -> k60: kRequestAutoFeedEncoders(interval)
+Note over k60: For every interval
+Note over k60: If encoder[k] got changed
+k60 -> Any: kResponseEncodersById(k,accunumate count)
+Any->k60: kACK
+```
+
+###### Note: minimum interval depends on the setting of scheduler

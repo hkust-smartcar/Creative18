@@ -89,6 +89,7 @@ private:
 	bool recievedPackageId[10];
 	uint8_t filteredRecievedPackageSumByType[10];
 	uint16_t auto_feed_encoder_job_id = -1;
+	int32_t encoder_img = 0;
 
 	bool waiting_encoder = false;
 	int32_t encoder_count = 0;

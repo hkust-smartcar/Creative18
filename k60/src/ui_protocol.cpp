@@ -145,14 +145,13 @@ void UiProtocol::RequestAutoFeedEncodersHandler(const Bluetooth::Package& pkg){
 		//non zero interval reschedule
 		if(interval){
 			auto_feed_encoder_job_id = pWheelbase->pScheduler->SetInterval([&]{
-				int32_t encoder_img[3];
-				memcpy(encoder_img,pWheelbase->encoder_counts,12);
 				pWheelbase->UpdateEncoders();
 				for(int i=0; i<3; i++){
 					if(encoder_img[i] != pWheelbase->encoder_counts[i]){
 						ResponseEncoderById(i,pWheelbase->encoder_counts[i]);
 					}
 				}
+				memcpy(encoder_img,pWheelbase->encoder_counts,12);
 			},interval);
 		}
 	}

@@ -173,10 +173,10 @@ void Protocol::RequestAutoFeedEncodersHandler(const Bluetooth::Package& pkg){
 		//non zero interval reschedule
 		if(interval){
 			auto_feed_encoder_job_id = pWheelbase->pScheduler->SetInterval([&]{
-				int32_t encoder_img = pWheelbase->encoder_counts[0];
 				pWheelbase->UpdateEncoders();
 				if(encoder_img != pWheelbase->encoder_counts[0]){
 					ResponseEncoder(pWheelbase->encoder_counts[0]);
+					encoder_img = pWheelbase->encoder_counts[0];
 				}
 			},interval);
 		}
