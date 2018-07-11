@@ -13,12 +13,15 @@ getGlobalRotation,\
 getGlobalRotationWithDirection,\
 getRotateCorners,\
 getLocalDisplacement,\
-getMergedRotatedCornerLength
+getMergedRotatedCornerLength,\
+sortRects
 from util import mapToWorld, mapToImage, deg
 from math import sin, cos
 
 import comm
 import protocol
+
+draw = False
 
 mycomm = comm.Comm(print)
 
@@ -51,14 +54,15 @@ while(True):
     startTime = pyb.millis()
 
     #get rects
-    rects = img.find_rects(threshold=10000)
+    rects = sortRects(img.find_rects(threshold=10000))
 
-    #draw raw rects
+    #draw raw rects and push corner
     for k, r in enumerate(rects):
         c = r.corners()
         for i, p in enumerate(c):
             p_ = c[i-1]
-            img.draw_line(p[0], p[1], p_[0], p_[1], 5, color=(255, 255, 0))
+            if draw:
+                img.draw_line(p[0], p[1], p_[0], p_[1], 5, color=(255, 255, 0))
     
     #get mode length
     length = get_length(img, rects, 2)
@@ -77,15 +81,16 @@ while(True):
     print('deg', deg(gRotation), 'theta', theta)
 
     #display the rotations
-    [x0, y0] = mapToImage([100, 200])
-    [x1, y1] = mapToImage([100-dx, 200-length])
-    img.draw_line(x0, y0, x1, y1, color=(255, 255, 255), thickness=5)
-    img.draw_line(x0, y0, x1, y1, color=(0, 0, 0), thickness=2)
+    if draw:
+        [x0, y0] = mapToImage([100, 200])
+        [x1, y1] = mapToImage([100-dx, 200-length])
+        img.draw_line(x0, y0, x1, y1, color=(255, 255, 255), thickness=5)
+        img.draw_line(x0, y0, x1, y1, color=(0, 0, 0), thickness=2)
 
-    [x0, y0] = [70, 60]
-    [x1, y1] = [70-int(length*cos(gRotation)), 60-int(length*sin(gRotation))]
-    img.draw_line(x0, y0, x1, y1, color=(255, 255, 255), thickness=5)
-    img.draw_line(x0, y0, x1, y1, color=(0, 0, 0), thickness=2)
+        [x0, y0] = [70, 60]
+        [x1, y1] = [70-int(length*cos(gRotation)), 60-int(length*sin(gRotation))]
+        img.draw_line(x0, y0, x1, y1, color=(255, 255, 255), thickness=5)
+        img.draw_line(x0, y0, x1, y1, color=(0, 0, 0), thickness=2)
     
 
     #display the good rects and push corners
@@ -94,7 +99,8 @@ while(True):
         corners += c
         for i, p in enumerate(c):
             p_ = c[i-1]
-            img.draw_line(p[0], p[1], p_[0], p_[1], 5, color=(255, 0, 0))
+            if draw:
+                img.draw_line(p[0], p[1], p_[0], p_[1], 5, color=(255, 0, 0))
     
     #send the filtered corners for debug
     #protocol.feedCorners(frame_id,corners)
@@ -108,8 +114,9 @@ while(True):
     # print(corners)
 
     #draw transformed corners
-    for p in corners:
-        img.draw_circle((p[0])//2, p[1]//2, 5, color=(0, 255, 0))
+    if draw:
+        for p in corners:
+            img.draw_circle((p[0])//2, p[1]//2, 5, color=(0, 255, 0))
 
     #get merged length
     # m_len = getMergedRotatedCornerLength(corners)

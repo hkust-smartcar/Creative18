@@ -3,15 +3,33 @@ import image
 import time
 from util import dist, mapToImage, mapToWorld, sgn
 from math import acos, pi, sin, cos
+#from quicksort import quicksort
 
+
+origin = (95, 270)
+
+def sortRects(rects):
+    rects_ = []
+    for rect in rects:
+        score = 0
+        corners = rect.corners()
+        for corner in corners:
+            score += corner[1]*4 + abs(corner[0] - origin[0])
+        rects_.append((
+            score,
+            rect
+        ))
+    rects = sorted(rects_, key = lambda r:r[0])
+    return list(map(lambda r:r[1],rects))
 
 def vote(votes, new_vote, threshold):
     for v in votes:
         if(abs(v-new_vote) < threshold):
-            cnt = votes[v]
-            votes.pop(v,None)
-            nv = (cnt*v + new_vote)/(cnt+1)
-            votes[nv] = cnt+1
+            votes[v] += 1
+            # cnt = votes[v]
+            # votes.pop(v,None)
+            # nv = (cnt*v + new_vote)/(cnt+1)
+            # votes[nv] = cnt+1
             return
     votes[new_vote] = 1
 
@@ -35,7 +53,7 @@ def get_rotation(img, rects, length, threshold):
         for i, p1 in enumerate(c):
             p1 = mapToWorld(p1)
             p2 = mapToWorld(c[i-1])
-            img.draw_circle(p1[0], p1[1], 5, color=(255, 0, 0))
+            # img.draw_circle(p1[0], p1[1], 5, color=(255, 0, 0))
             if p1[1] > p2[1]:
                 p1, p2 = p2, p1
             dx = p2[0] - p1[0]
