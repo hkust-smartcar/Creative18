@@ -188,7 +188,7 @@ var app = new Vue({
       })
     },
 
-    toDeg: rad => rad*360/Math.PI
+    toDeg: rad => rad*360/Math.PI % 360
   }
 })
 

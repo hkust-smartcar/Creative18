@@ -52,7 +52,7 @@
                 </div>
               </v-tab-item>
               <v-tab-item key="corners">
-                <p>Rotation: global:{{toDeg(globalRotation)}} local:{{toDeg(localRotation)}}</p>
+                <p>Rotation: global:{{toDeg(globalRotation)}} local:{{toDeg(localRotation)}} hacky:{{toDeg(globalRotation)%90-45}}</p>
                 <p>Translation: global({{globalTranslationX}}, {{globalTranslationY}}) local({{localTranslationX}}, {{localTranslationY}})</p>
                 <p>FrameID: {{last_frame_id}} FPS:{{fps}}</p>
                 <canvas id="corners_canvas" width="500px" height="500px">

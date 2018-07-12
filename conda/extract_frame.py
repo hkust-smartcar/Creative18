@@ -1,7 +1,12 @@
 import cv2
 import numpy as np
 
-def extract(path = 'img/test2/test2.mp4'):
+"""
+convert mp4 to many jpg
+@param {threshold}: 1000 for different top left number, 2000 for whole different frame
+"""
+
+def extract(path = 'img/test2/test2.mp4', threshold = 1000):
     vidcap = cv2.VideoCapture(path)
     read_success = True
     prev = None
@@ -17,7 +22,7 @@ def extract(path = 'img/test2/test2.mp4'):
                 if np.any(diff):
                     diff = np.linalg.norm(diff)
                     print('frameid %d diff %d'%(count,diff))
-                    if diff > 1000:
+                    if diff > threshold:
                         flag = True
         if flag:
             filename = path+"_frame%d.jpg" % count

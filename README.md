@@ -1,5 +1,7 @@
 # Creative18
 
+> To have the best view of this document, download [Typora](https://typora.io), the best Markdown editor ever
+
 ## Software Specifications
 
 ### I. Data Structure

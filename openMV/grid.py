@@ -151,7 +151,7 @@ def getRotateCorners(img, fixedCorners, theta):
 def getLocalDisplacement(rects):
     return rects
 
-def getLocalPosition(corners):
+def getLocalTranslation(corners):
     tlcs = [] #top left corners
     #brcs = [] #bottom right corners
 
@@ -180,3 +180,48 @@ def getLocalPosition(corners):
         print(e,tlcs)
         R = 0,0
     return R
+
+def rotateLocalTranslation(dx,dy,gRotation, theta):
+    if gRotation<pi/4 or gRotation>7*pi/4:
+        return -dx, dy
+    elif gRotation>pi/4 and gRotation<3*pi/4:
+        return -dy,-dx
+    elif gRotation>3*pi/4 and gRotation<5*pi/4:
+        return dx, -dy
+    elif gRotation>5*pi/4 and gRotation<7*pi/4:
+        return dy,dx
+    else:
+        if theta == pi/4:
+            if gRotation==pi/4:
+                return -dx, dy
+            elif gRotation==pi/4:
+                return -dy,-dx
+            elif gRotation==3*pi/4:
+                return dx, -dy
+            elif gRotation==5*pi/4:
+                return dy,dx
+        elif theta == -pi/4:
+            if gRotation==7*pi/4:
+                return -dx, dy
+            elif gRotation==3*pi/4:
+                return -dy,-dx
+            elif gRotation==5*pi/4:
+                return dx, -dy
+            elif gRotation==7*pi/4:
+                return dy,dx
+
+"""
+only calculate X or Y
+"""
+def getGlobalSubTranslation(prevg, prevl, currl):
+    currg = prevg - prevl + currl
+    if(abs(currl - prevl)>25):
+        if(currl<25 and prevl>25):
+            currg-=50
+        elif(currl>25 and prevl<25):
+            currg+=50
+    return currg
+
+def getGlobalTranslation(prevg, prevl, currl):
+    return getGlobalSubTranslation(prevg[0], prevl[0], currl[0]),\
+           getGlobalSubTranslation(prevg[1], prevl[1], currl[1])

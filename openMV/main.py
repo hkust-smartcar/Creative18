@@ -12,7 +12,9 @@ getGoodRects,\
 getGlobalRotation,\
 getRotateCorners,\
 getLocalDisplacement,\
-getLocalPosition,\
+getLocalTranslation,\
+rotateLocalTranslation,\
+getGlobalTranslation,\
 sortRects
 from util import mapToWorld, mapToImage, deg
 from math import sin, cos
@@ -42,6 +44,8 @@ corners = []
 
 gRotation = 0
 lRotation = 0
+gTranslation = [0,0]
+lTranslation = [0,0]
 
 frame_id = 0
 
@@ -123,9 +127,12 @@ while(True):
     corners = list(map(mapToWorld, corners))
     # corners = fuse_corners(corners, 20)
     corners = getRotateCorners(img, corners, theta)
-    dx, dy = getLocalPosition(corners)
-
+    dx, dy = getLocalTranslation(corners)
     protocol.feedLocalTranslation(dx,dy,pyb.millis() - startTime,frame_id)
+    dx, dy = rotateLocalTranslation(dx,dy,gRotation, theta)
+    gTranslation = getGlobalTranslation(gTranslation, lTranslation, [dx,dy])
+    lTranslation = [dx,dy]
+    protocol.feedGlobalTranslation(gTranslation[0],gTranslation[1],pyb.millis() - startTime,frame_id)
 
     # print(corners)
 
