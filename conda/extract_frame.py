@@ -17,12 +17,12 @@ def extract(path = 'img/test2/test2.mp4'):
                 if np.any(diff):
                     diff = np.linalg.norm(diff)
                     print('frameid %d diff %d'%(count,diff))
-                    if diff > 2000:
+                    if diff > 1000:
                         flag = True
         if flag:
             filename = path+"_frame%d.jpg" % count
             cv2.imwrite(filename , image)     # save frame as JPEG file
             count += 1
             print('output a new frame', filename)
-            prev = image
+        prev = image
         #print('Read a new frame: ', read_success)

@@ -10,10 +10,10 @@ from PIL import Image
 import json
 
 
-path = "tilted.jpg"
-newsize = (200,240)
-src = [[43,34], [111,35], [22,84], [128,86]]
-tgt = [[50,100],[140,100],[50,190],[140,190]]
+path = "img/test4.jpg"
+newsize = (300,250)
+src = [[14,109], [41,45], [114,46], [140,107]]
+tgt = [[100,250],[100,150],[200,150],[200,250]]
 
 """
 pj = np.squeeze(np.asarray(np.matrix('''

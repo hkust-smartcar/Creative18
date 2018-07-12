@@ -9,7 +9,7 @@ from PIL import Image
 from jp import jp
 from pj import pj
 
-def fix(path = "img/test2.jpg", oldsize = (160,120), fixedsize = (200,250), preview = True):
+def fix(path = "img/test2.jpg", oldsize = (160,120), fixedsize = (300,250), preview = True):
 
     jpgfile = Image.open(path)
     fixedfile = Image.new('RGB',fixedsize)
@@ -45,7 +45,7 @@ def fix(path = "img/test2.jpg", oldsize = (160,120), fixedsize = (200,250), prev
                 
     #ofile.show()
 
-def fixforeach(path = "img/test2/test2.mp4", index = 0, end = 95, preview = True):
+def fixforeach(path = "img/vid/vid.mp4", index = 0, end = 146, preview = False):
     while(index < end):
         fix(path+"_frame"+str(index)+".jpg", preview = preview)
         index+=1
