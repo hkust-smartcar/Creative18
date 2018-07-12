@@ -54,3 +54,17 @@ def feedLocalRotation(angle, time, frame_id):
         "id": comm.getPkgId(),
         "data": ustruct.pack("<fHH",angle, time, frame_id)
     })
+
+def feedGlobalTranslation(x,y,time,frame_id):
+    comm.sendPackageImmediate({
+        "type": PKGTYPE["kFeedGlobalTranslation"],
+        "id": comm.getPkgId(),
+        "data": ustruct.pack("<iiHH",x,y, time, frame_id)
+    })
+
+def feedLocalTranslation(x,y,time,frame_id):
+    comm.sendPackageImmediate({
+        "type": PKGTYPE["kFeedLocalTranslation"],
+        "id": comm.getPkgId(),
+        "data": ustruct.pack("<iiHH",x,y, time, frame_id)
+    })

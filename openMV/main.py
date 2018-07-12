@@ -10,10 +10,9 @@ from grid import get_rotation,\
 get_length,\
 getGoodRects,\
 getGlobalRotation,\
-getGlobalRotationWithDirection,\
 getRotateCorners,\
 getLocalDisplacement,\
-getMergedRotatedCornerLength,\
+getLocalPosition,\
 sortRects
 from util import mapToWorld, mapToImage, deg
 from math import sin, cos
@@ -21,7 +20,7 @@ from math import sin, cos
 import comm
 import protocol
 
-draw = False
+draw = True
 
 mycomm = comm.Comm(print)
 
@@ -53,8 +52,19 @@ while(True):
     img = sensor.snapshot().lens_corr(1.8,1)
     startTime = pyb.millis()
 
+    img.draw_string(0,0,str(frame_id),scale=2,color=(255,255,255))
+    img.draw_string(0,0,str(frame_id),scale=2,color=(0,0,0))
+
+    frame_id += 1
+
     #get rects
-    rects = sortRects(img.find_rects(threshold=10000))
+    rects = img.find_rects(threshold=5000)
+    
+    if(len(rects) == 0):
+        continue
+
+    #sort rects
+    rects = sortRects(rects)
 
     #draw raw rects and push corner
     for k, r in enumerate(rects):
@@ -62,7 +72,7 @@ while(True):
         for i, p in enumerate(c):
             p_ = c[i-1]
             if draw:
-                img.draw_line(p[0], p[1], p_[0], p_[1], 5, color=(255, 255, 0))
+                img.draw_line(p[0], p[1], p_[0], p_[1], 5, color=(0, 0, 0))
     
     #get mode length
     length = get_length(img, rects, 2)
@@ -74,6 +84,8 @@ while(True):
 
     #calculate the rotation
     dx, theta = get_rotation(img, rects, length, 2)
+    if dx == 594561648413218498712:
+        continue
     gRotation = getGlobalRotation(gRotation, lRotation, theta)
     protocol.feedGlobalRotation(gRotation, pyb.millis() - startTime,frame_id)
     protocol.feedLocalRotation(theta, pyb.millis() - startTime,frame_id)
@@ -100,7 +112,7 @@ while(True):
         for i, p in enumerate(c):
             p_ = c[i-1]
             if draw:
-                img.draw_line(p[0], p[1], p_[0], p_[1], 5, color=(255, 0, 0))
+                img.draw_line(p[0], p[1], p_[0], p_[1], 5, color=(0, 0, 0), thickness=5)
     
     #send the filtered corners for debug
     #protocol.feedCorners(frame_id,corners)
@@ -111,6 +123,10 @@ while(True):
     corners = list(map(mapToWorld, corners))
     # corners = fuse_corners(corners, 20)
     corners = getRotateCorners(img, corners, theta)
+    dx, dy = getLocalPosition(corners)
+
+    protocol.feedLocalTranslation(dx,dy,pyb.millis() - startTime,frame_id)
+
     # print(corners)
 
     #draw transformed corners
@@ -128,7 +144,4 @@ while(True):
 
     protocol.feedCorners(frame_id,corners)
 
-    img.draw_string(0,0,str(frame_id),scale=2,color=(255,255,255))
-    img.draw_string(0,0,str(frame_id),scale=2,color=(0,0,0))
-
-    frame_id += 1
+    

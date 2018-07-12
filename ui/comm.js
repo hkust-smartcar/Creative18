@@ -124,6 +124,7 @@ Comm.pkg_type = {
   kRequestAutoFeedEncoders: 0x0D,
   kFeedCorners: 0xA0,
   kFeedLocalRotation: 0xA1,
+  kFeedLocalTranslation: 0xA2
 }
 
 module.exports = Comm

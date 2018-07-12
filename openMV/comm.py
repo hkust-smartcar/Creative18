@@ -17,7 +17,8 @@ PKGTYPE = {
             "kRequestSetServo" : 0x0C,
             "kRequestAutoFeedEncoders" : 0x0D,
             "kFeedCorners": 0xA0,
-            "kFeedLocalRotation" : 0xA1
+            "kFeedLocalRotation" : 0xA1,
+            "kFeedLocalTranslation": 0xA2
         }
 
 class Comm:

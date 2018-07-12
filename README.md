@@ -53,6 +53,7 @@ kRequestSetServo = 0x0C,
 kRequestAutoFeedEncoders = 0x0D,
 kFeedCorners = 0xA0,
 kFeedLocalRotation = 0xA1,
+kFeedLocalTranslation = 0xA2
 ```
 
 #### B. Package structure
@@ -354,3 +355,25 @@ Any->k60: kACK
 ```
 
 ###### Note: minimum interval depends on the setting of scheduler
+
+##### 13. Feed Local Translation
+
+###### data:
+
+`int32_t` `x_translation, y_translation`
+
+`uint16_t` lapse (time_spent_on_calculation)
+
+`uint16_t` frame_id
+
+###### return:
+
+`none`
+
+```sequence
+Note over OpenMV: new frame
+OpenMV->Ui: kFeedLocalTranslation
+Ui->OpenMV: kACK
+```
+
+##### 
