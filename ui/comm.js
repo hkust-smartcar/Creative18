@@ -14,6 +14,10 @@ class Comm {
         this.parse(element)
       });
     })
+    this.port.on('disconnected', () => {
+        alert('Disconnected, click ok to reconnect')
+        this.port = new SerialPort(portName, { baudRate: 115200 })        
+    });
     // console.log(`connected to ${portName}`)
     app.log(`connected to ${portName}`)
 

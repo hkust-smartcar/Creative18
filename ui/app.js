@@ -152,7 +152,7 @@ var app = new Vue({
     exportFrameDetails: ()=>{
       details = {}
       download('frame_details.txt',JSON.stringify({
-        corners: app.corners,
+        corners: app.frame_corners,
         rotations: app.globalRotations,
         local_rotations: app.localRotations,
         translations: app.globalTranslations,
@@ -171,13 +171,20 @@ var app = new Vue({
     drawCorners: (corners, link)=>{
       app.cornerCtx.fillStyle = 'rgba(255, 255, 255, 1)'
       app.cornerCtx.fillRect(0, 0, 500, 500)
-      app.cornerCtx.fillStyle = '#ff0000'
       corners.forEach(([x,y],k)=>{
         if(link){
-          const [x0,y0] = (k%4 == 0 ? corners[k+3] : corners[k-1])
-          app.drawLine(app.cornerCtx, x0,y0,x,y)
+          try{
+            const [x0,y0] = (k%4 == 0 ? corners[k+3] : corners[k-1])
+            app.drawLine(app.cornerCtx, x0,y0,x,y)
+          } catch(e){
+            console.log(corners, corners.length, k, k+3, k-1, e)
+            link = false
+          }
         }
+        app.cornerCtx.fillStyle = '#ff0000'
         app.cornerCtx.fillRect(x, y, 5, 5)
+        app.cornerCtx.fillStyle = "#000000"
+        app.ctx.fillText(`( ${x}, ${y} )`, 0, 40)
       })
     },
 

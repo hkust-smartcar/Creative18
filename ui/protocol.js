@@ -93,8 +93,8 @@ class Protocol {
     if (!(chunk_id in this.app.frame_chunks[frame_id])){
       this.app.frame_chunks[frame_id][chunk_id] = true
       for(let cursor = 3; cursor < pkg.data.length; cursor += 4){
-        const x = pkg.data.readUInt8(cursor)
-        const y = pkg.data.readUInt8(cursor + 2)
+        const x = pkg.data.readInt16LE(cursor)
+        const y = pkg.data.readInt16LE(cursor + 2)
         this.app.frame_corners[frame_id].push([x,y])
       }
     }
