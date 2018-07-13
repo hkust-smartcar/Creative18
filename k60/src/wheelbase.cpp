@@ -117,12 +117,13 @@ void Wheelbase::TestOpenMVProtocol(){
 	time_t nextRender = 0;
 
 	while (true){
-		if(System::Time()%10==0){
+		if(System::Time()>nextRender){
 			console.Listen();
 			console.ListItemValues();
-			if(System::Time()%250==0)
-			led0.Switch();
+			nextRender = System::Time()+100;
 		}
+		if(System::Time()%250==0)
+		led1.Switch();
 	}
 }
 

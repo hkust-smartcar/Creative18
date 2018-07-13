@@ -15,7 +15,8 @@ getRotateCorners,\
 getLocalTranslation,\
 rotateLocalTranslation,\
 getGlobalTranslation,\
-sortRects
+sortRects,\
+getLocalRotateType
 from util import mapToWorld, mapToImage, deg
 from math import sin, cos
 
@@ -96,7 +97,7 @@ while(True):
     protocol.feedGlobalRotation(gRotation, pyb.millis() - startTime,frame_id)
     protocol.feedLocalRotation(theta, pyb.millis() - startTime,frame_id)
     lRotation = theta
-    print('deg', deg(gRotation), 'theta', theta)
+    # print('deg', deg(gRotation), 'theta', theta)
 
     #display the rotations
     if draw:
@@ -130,10 +131,11 @@ while(True):
     corners = getRotateCorners(img, corners, theta)
     dx, dy = getLocalTranslation(corners)
     dx, dy = rotateLocalTranslation(dx,dy,gRotation, theta)
-    protocol.feedLocalTranslation(dx,dy,pyb.millis() - startTime,frame_id)
     gTranslation = getGlobalTranslation(gTranslation, lTranslation, [dx,dy])
     lTranslation = [dx,dy]
+    protocol.feedLocalTranslation(dx,dy,pyb.millis() - startTime,frame_id)
     protocol.feedGlobalTranslation(gTranslation[0],gTranslation[1],pyb.millis() - startTime,frame_id)
+    print("gTra: ",gTranslation," lTra: ",lTranslation, " gRot: ",deg(gRotation),"rTyp: ",getLocalRotateType(gRotation,theta))
 
     # print(corners)
 
@@ -150,6 +152,6 @@ while(True):
     # localDisplacement = getLocalDisplacement(img, corners,m_len)
     # print('local displacement',localDisplacement)
 
-    # protocol.feedCorners(frame_id,corners)
+    protocol.feedCorners(frame_id,corners)
 
     

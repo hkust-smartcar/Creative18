@@ -199,16 +199,13 @@ def getLocalTranslation(corners):
     #for each rects
     for i in range(0,len(corners),4):
         c = corners[i:i+4]
-        tlc = c[0]
-        d = sqdist([0,0],c[0])
+        tlc = [0,0]
 
-        #find its top left corner
-        for j in range(1,4,1):
-            d_ = sqdist([0,0],c[j])
-            if (d_<d):
-                tlc = c[j]
-                d = d_
-        tlcs.append(tlc)
+        #find its center point
+        for j in range(0,4,1):
+            tlc[0]+=c[j][0]
+            tlc[1]+=c[j][1]
+        tlcs.append([tlc[0]/4,tlc[1]/4])
 
     dx, dy = 0, 0
     for c in tlcs:
@@ -225,13 +222,13 @@ def getLocalTranslation(corners):
 def rotateLocalTranslation(dx,dy,gRotation, theta):
     rtype = getLocalRotateType(gRotation, theta)
     if rtype==0:
-        return 50-(-dy+15)%50, 50-dx
+        return (50-(-dy+15))%50, (50-dx)%50
     elif rtype==1:
-        return dx,50-(-dy+15)%50
+        return dx%50,(50-(-dy+15))%50
     elif rtype==2:
-        return (dy-15)%50, dx
+        return (dy-15)%50, dx%50
     elif rtype==3:
-        return 50-dx,(dy-15) % 50
+        return (50-dx)%50,(dy-15) % 50
     else:
         raise Exception('unknown rotation type ',rtype)
 
@@ -239,14 +236,14 @@ def rotateLocalTranslation(dx,dy,gRotation, theta):
 only calculate X or Y
 """
 def getGlobalSubTranslation(prevg, prevl, currl):
-    currg = prevg - prevl + currl
-    currl %= 50
-    prevl %= 50
-    if(abs(currl - prevl)>25):
-        if(currl<25 and prevl>25):
-            currg+=50
-        elif(currl>25 and prevl<25):
-            currg-=50
+    if (prevl >= 30 and currl <= 20 and abs(prevl - currl)>25):
+        print("add 1")
+        currg = prevg + 50 - prevl + currl
+    elif (prevl <= 20 and currl >= 30 and abs(prevl - currl)>25):
+        print("minus 1")
+        currg = prevg - prevl + currl - 50
+    else:
+        currg = prevg - prevl + currl
     return currg
 
 def getGlobalTranslation(prevg, prevl, currl):
