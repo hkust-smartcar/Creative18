@@ -7,6 +7,7 @@ import pyb
 from fuse_corners import fuse_corners
 from find_num import find_num
 from grid import get_rotation,\
+transformRects,\
 get_length,\
 getGoodRects,\
 getGlobalRotation,\
@@ -69,7 +70,7 @@ while(True):
     #sort rects
     rects = sortRects(rects)
 
-    #draw raw rects and push corner
+    #draw raw rects
     for k, r in enumerate(rects):
         c = r.corners()
         for i, p in enumerate(c):
@@ -77,6 +78,8 @@ while(True):
             if draw:
                 img.draw_line(p[0], p[1], p_[0], p_[1], 5, color=(0, 0, 0))
     
+    rects = transformRects(rects)
+
     #get mode length
     length = get_length(img, rects, 2)
     if(length == 0):
@@ -109,11 +112,11 @@ while(True):
     
 
     #display the good rects and push corners
-    for k, r in enumerate(rects):
-        c = r.corners()
+    for k, c in enumerate(rects):
         corners += c
         for i, p in enumerate(c):
-            p_ = c[i-1]
+            p = mapToImage(p)
+            p_ = mapToImage(c[i-1])
             if draw:
                 img.draw_line(p[0], p[1], p_[0], p_[1], 5, color=(0, 0, 0), thickness=5)
     
@@ -123,7 +126,6 @@ while(True):
 
     #calculate the translation
     #simplify the grid
-    corners = list(map(mapToWorld, corners))
     # corners = fuse_corners(corners, 20)
     corners = getRotateCorners(img, corners, theta)
     dx, dy = getLocalTranslation(corners)

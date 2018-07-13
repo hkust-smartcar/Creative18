@@ -48,13 +48,11 @@ def get_rotation(img, rects, length, threshold):
     votes = {}
     d = 594561648413218498712
     cs = []
-    for rk, r in enumerate(rects):
-        c = r.corners()
+    for rk, c in enumerate(rects):
         cs += c
         min_dx = 10000
         for i, p1 in enumerate(c):
-            p1 = mapToWorld(p1)
-            p2 = mapToWorld(c[i-1])
+            p2 = c[i-1]
             # img.draw_circle(p1[0], p1[1], 5, color=(255, 0, 0))
             if p1[1] > p2[1]:
                 p1, p2 = p2, p1
@@ -73,14 +71,22 @@ def get_rotation(img, rects, length, threshold):
     return R
 
 
+def transformRects(rects):
+    newRects = []
+    for rect in rects:
+        corners = rect.corners()
+        newCorners = []
+        for corner in corners:
+            newCorners.append(mapToWorld(corner))
+        newRects.append(newCorners)
+    return newRects
+
 def get_length(img, rects, threshold):
     dist_votes = {}
     length = 50
-    for rk, r in enumerate(rects):
-        c = r.corners()
+    for c in rects:
         for i, p1 in enumerate(c):
-            p1 = mapToWorld(p1)
-            p2 = mapToWorld(c[i-1])
+            p2 = c[i-1]
             local_length = dist(p1, p2)
             if(local_length < 35 or local_length > 45):
                 break
@@ -92,15 +98,14 @@ def get_length(img, rects, threshold):
 
 def getGoodRects(rects, length, threshold):
     goodRects = []
-    for rect in rects:
-        corners = list(map(mapToWorld, rect.corners()))
+    for corners in rects:
         reject = False
         for k, c in enumerate(corners):
             if(abs(dist(c, corners[k-1]) - length) > threshold):
                 reject = True
                 break
         if not reject:
-            goodRects.append(rect)
+            goodRects.append(corners)
     return goodRects
 
 
