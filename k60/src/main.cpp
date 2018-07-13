@@ -208,13 +208,18 @@ void testUiProtocolWithScheduler(){
 	}
 }
 
+void testOpenMV(){
+	Wheelbase wb;
+	wb.TestOpenMVProtocol();
+}
+
 int main(void)
 {
 	System::Init();
 
-
+	testOpenMV();
 //	test();
-	master();
+//	master();
 //	slave();
 //	test();
 

@@ -20,6 +20,7 @@
 #include "protocol.h"
 #include "ui_protocol.h"
 #include "scheduler.h"
+#include "debug_console.h"
 
 using namespace libsc;
 
@@ -98,9 +99,17 @@ public:
 	uint16_t globalRotationLapse = 0;
 	time_t globalRotationReceivedTime = 0;
 
+	float localRotation = 0;
+	uint16_t localRotationLapse = 0;
+	time_t localRotationReceivedTime = 0;
+
 	int32_t globalTranslationX = 0, globalTranslationY = 0;
 	uint16_t globalTranslationLapse = 0;
 	time_t globalTranslationReceivedTime = 0;
+
+	int32_t localTranslationX = 0, localTranslationY = 0;
+	uint16_t localTranslationLapse = 0;
+	time_t localTranslationReceivedTime = 0;
 
 	friend Protocol;
 	friend UiProtocol;

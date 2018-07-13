@@ -8,9 +8,9 @@
 #include "ui_protocol.h"
 
 void UiProtocol::Handler(const Bluetooth::Package& pkg){
-	Byte debug[100];
-	memset(debug,0,100);
-	memcpy(debug,&*pkg.data.begin(),pkg.data.size());
+//	Byte debug[100];
+//	memset(debug,0,100);
+//	memcpy(debug,&*pkg.data.begin(),pkg.data.size());
 	if(test){
 //		char c[20];
 //		sprintf(c,"sum %d %d", m_bt.receive_package_count, m_bt.bytecount);
@@ -41,8 +41,14 @@ void UiProtocol::Handler(const Bluetooth::Package& pkg){
 	case Bluetooth::PkgType::kFeedGlobalRotation:
 		FeedGlobalRotationHandler(pkg);
 		break;
+	case Bluetooth::PkgType::kFeedLocalRotation:
+		FeedLocalRotationHandler(pkg);
+		break;
 	case Bluetooth::PkgType::kFeedGlobalTranslation:
 		FeedGlobalTranslationHandler(pkg);
+		break;
+	case Bluetooth::PkgType::kFeedLocalTranslation:
+		FeedLocalTranslationHandler(pkg);
 		break;
 	case Bluetooth::PkgType::kRequestAutoFeedEncoders:
 		RequestAutoFeedEncodersHandler(pkg);
@@ -123,6 +129,16 @@ void UiProtocol::FeedGlobalRotationHandler(const Bluetooth::Package& pkg){
 		memcpy(&pWheelbase->globalRotation, &*pkg.data.begin(), 4);
 		memcpy(&pWheelbase->globalRotationLapse, &*pkg.data.begin() + 4, 2);
 		pWheelbase->globalRotationReceivedTime = System::Time();
+		pWheelbase->globalRotation = pWheelbase->globalRotation*180/3.14159;
+	}
+}
+
+void UiProtocol::FeedLocalRotationHandler(const Bluetooth::Package& pkg){
+	if(pWheelbase){
+		memcpy(&pWheelbase->localRotation, &*pkg.data.begin(), 4);
+		memcpy(&pWheelbase->localRotationLapse, &*pkg.data.begin() + 4, 2);
+		pWheelbase->localRotationReceivedTime = System::Time();
+		pWheelbase->localRotation = pWheelbase->localRotation*180/3.14159;
 	}
 }
 
@@ -132,6 +148,15 @@ void UiProtocol::FeedGlobalTranslationHandler(const Bluetooth::Package& pkg){
 		memcpy(&pWheelbase->globalTranslationY, &*pkg.data.begin() + 4, 4);
 		memcpy(&pWheelbase->globalTranslationLapse, &*pkg.data.begin() + 8, 2);
 		pWheelbase->globalTranslationReceivedTime = System::Time();
+	}
+}
+
+void UiProtocol::FeedLocalTranslationHandler(const Bluetooth::Package& pkg){
+	if(pWheelbase){
+		memcpy(&pWheelbase->localTranslationX, &*pkg.data.begin(), 4);
+		memcpy(&pWheelbase->localTranslationY, &*pkg.data.begin() + 4, 4);
+		memcpy(&pWheelbase->localTranslationLapse, &*pkg.data.begin() + 8, 2);
+		pWheelbase->localTranslationReceivedTime = System::Time();
 	}
 }
 

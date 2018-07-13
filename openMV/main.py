@@ -11,7 +11,6 @@ get_length,\
 getGoodRects,\
 getGlobalRotation,\
 getRotateCorners,\
-getLocalDisplacement,\
 getLocalTranslation,\
 rotateLocalTranslation,\
 getGlobalTranslation,\
@@ -84,7 +83,7 @@ while(True):
         continue
 
     #filter rects
-    rects = getGoodRects(rects, length, 10)
+    rects = getGoodRects(rects, length, 15)
 
     #calculate the rotation
     dx, theta = get_rotation(img, rects, length, 2)
@@ -128,8 +127,8 @@ while(True):
     # corners = fuse_corners(corners, 20)
     corners = getRotateCorners(img, corners, theta)
     dx, dy = getLocalTranslation(corners)
-    protocol.feedLocalTranslation(dx,dy,pyb.millis() - startTime,frame_id)
     dx, dy = rotateLocalTranslation(dx,dy,gRotation, theta)
+    protocol.feedLocalTranslation(dx,dy,pyb.millis() - startTime,frame_id)
     gTranslation = getGlobalTranslation(gTranslation, lTranslation, [dx,dy])
     lTranslation = [dx,dy]
     protocol.feedGlobalTranslation(gTranslation[0],gTranslation[1],pyb.millis() - startTime,frame_id)
@@ -149,6 +148,6 @@ while(True):
     # localDisplacement = getLocalDisplacement(img, corners,m_len)
     # print('local displacement',localDisplacement)
 
-    protocol.feedCorners(frame_id,corners)
+    # protocol.feedCorners(frame_id,corners)
 
     

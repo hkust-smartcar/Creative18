@@ -134,7 +134,7 @@ void DebugConsole::ListItems() {
 }
 
 void DebugConsole::ListItemValues() {
-  Clear();
+//  Clear();
   for (int i = topIndex; i < (items.size() < topIndex + displayLength ? items.size() : topIndex + displayLength); i++) {
     PrintItemValue(i, i == focus);
   }

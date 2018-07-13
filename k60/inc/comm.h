@@ -61,7 +61,8 @@ public:
 		kRequestSetServo = 0x0C,
 		kRequestAutoFeedEncoders = 0x0D,
 		kFeedCorners = 0xA0,
-		kFeedLocalRotation = 0xA1;
+		kFeedLocalRotation = 0xA1,
+		kFeedLocalTranslation = 0xA2;
 	};
 
 	struct Package{
@@ -145,7 +146,7 @@ private:
 
 	std::function<void(const Package&)> m_CustomHandler;
 
-	Byte debug[100];
+//	Byte debug[100];
 
 	bool pkg_start = false;
 	uint8_t len = 0;

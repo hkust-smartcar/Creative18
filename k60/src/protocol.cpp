@@ -8,9 +8,9 @@
 #include "protocol.h"
 
 void Protocol::Handler(const Bluetooth::Package& pkg){
-	Byte debug[100];
-	memset(debug,0,100);
-	memcpy(debug,&*pkg.data.begin(),pkg.data.size());
+//	Byte debug[100];
+//	memset(debug,0,100);
+//	memcpy(debug,&*pkg.data.begin(),pkg.data.size());
 	if(test){
 //		char c[20];
 //		sprintf(c,"sum %d %d", m_bt.receive_package_count, m_bt.bytecount);
