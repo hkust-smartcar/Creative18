@@ -115,12 +115,16 @@ while(True):
     #display the good rects and push corners
     for k, c in enumerate(rects):
         corners += c
+        t = [0,0]
         for i, p in enumerate(c):
             p = mapToImage(p)
+            t[0] += p[0]
+            t[1] += p[1]
             p_ = mapToImage(c[i-1])
             if draw:
                 img.draw_line(p[0], p[1], p_[0], p_[1], 5, color=(0, 0, 0), thickness=5)
-    
+        if draw:
+            img.draw_string(t[0]//4,t[1]//4,str(k),color=(0,0,0),scale=2)
     #send the filtered corners for debug
     #protocol.feedCorners(frame_id,corners)
 
@@ -130,12 +134,13 @@ while(True):
     # corners = fuse_corners(corners, 20)
     corners = getRotateCorners(img, corners, theta)
     dx, dy = getLocalTranslation(corners)
+    dx1, dy1 = dx, dy
     dx, dy = rotateLocalTranslation(dx,dy,gRotation, theta)
     gTranslation = getGlobalTranslation(gTranslation, lTranslation, [dx,dy])
     lTranslation = [dx,dy]
     protocol.feedLocalTranslation(dx,dy,pyb.millis() - startTime,frame_id)
     protocol.feedGlobalTranslation(gTranslation[0],gTranslation[1],pyb.millis() - startTime,frame_id)
-    print("gTra: ",gTranslation," lTra: ",lTranslation, " gRot: ",deg(gRotation),"rTyp: ",getLocalRotateType(gRotation,theta))
+    print("gTra: ",gTranslation," lTra: ",lTranslation, "llTra",(dx1,dy1), " gRot: ",deg(gRotation),"rTyp: ",getLocalRotateType(gRotation,theta))
 
     # print(corners)
 

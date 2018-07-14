@@ -6,7 +6,7 @@ from math import acos, pi, sin, cos
 #from quicksort import quicksort
 
 
-origin = (145, 270)
+origin = (0, 0)
 
 def sortRects(rects):
     rects_ = []
@@ -209,11 +209,11 @@ def getLocalTranslation(corners):
 
     dx, dy = 0, 0
     for c in tlcs:
-        dx+=c[0]%50
-        dy+=c[1]%50
+        dx+=c[0]
+        dy+=c[1]
     
     try:
-        R = int(dx/len(tlcs)),int(dy/len(tlcs))
+        R = int(dx/len(tlcs)%50),int(dy/len(tlcs)%50)
     except Exception as e:
         print(e,tlcs)
         R = 0,0
@@ -222,13 +222,13 @@ def getLocalTranslation(corners):
 def rotateLocalTranslation(dx,dy,gRotation, theta):
     rtype = getLocalRotateType(gRotation, theta)
     if rtype==0:
-        return (50-(-dy+15))%50, (50-dx)%50
+        return (50-(-dy+40)+2)%50, (50-dx+20-2)%50
     elif rtype==1:
-        return dx%50,(50-(-dy+15))%50
+        return (dx)%50,(50-(-dy+15)-23)%50
     elif rtype==2:
         return (dy-15)%50, dx%50
     elif rtype==3:
-        return (50-dx)%50,(dy-15) % 50
+        return (50-dx+20)%50,(dy-15+25) % 50
     else:
         raise Exception('unknown rotation type ',rtype)
 
@@ -236,10 +236,10 @@ def rotateLocalTranslation(dx,dy,gRotation, theta):
 only calculate X or Y
 """
 def getGlobalSubTranslation(prevg, prevl, currl):
-    if (prevl >= 30 and currl <= 20 and abs(prevl - currl)>25):
+    if (prevl >= 35 and currl <= 15 and abs(prevl - currl)>25):
         print("add 1")
         currg = prevg + 50 - prevl + currl
-    elif (prevl <= 20 and currl >= 30 and abs(prevl - currl)>25):
+    elif (prevl <= 35 and currl >= 15 and abs(prevl - currl)>25):
         print("minus 1")
         currg = prevg - prevl + currl - 50
     else:
