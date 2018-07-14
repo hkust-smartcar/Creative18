@@ -19,6 +19,7 @@ sortRects,\
 getLocalRotateType
 from util import mapToWorld, mapToImage, deg
 from math import sin, cos
+import preprocess
 
 import comm
 import protocol

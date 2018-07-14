@@ -57,4 +57,33 @@ def sgn(num):
 given an angle in radian, return degree
 """
 def deg(rad):
-    return rad*360/(pi*2)
+    return rad*360/(pi*2) % 360
+
+"""
+given a list, return its median
+"""
+def median(l):
+    try:
+        R = sorted(l)[int(len(l)/2)]
+    except IndexError as e:
+        print(e, len(l))
+        R = None
+    return R
+
+def mode(l,threshold = 0):
+    d = {}
+    m = 0
+    for i in l:
+        if(i in d):
+            d[i]+=1
+        else:
+            d[i]=1
+        if(d[i]>m):
+            m=d[i]
+    # print(d)
+    t = []
+    for k in d:
+        if d[k] == m:
+            t.append(k)
+    print(median(t))
+    return median(t)
