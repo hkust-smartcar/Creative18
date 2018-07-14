@@ -4,22 +4,10 @@ import sensor
 import image
 import time
 import pyb
-from fuse_corners import fuse_corners
-from find_num import find_num
-from grid import get_rotation,\
-transformRects,\
-get_length,\
-getGoodRects,\
-getGlobalRotation,\
-getRotateCorners,\
-getLocalTranslation,\
-rotateLocalTranslation,\
-getGlobalTranslation,\
-sortRects,\
-getLocalRotateType
 from util import mapToWorld, mapToImage, deg
 from math import sin, cos
 import preprocess
+from exceptions import NoEdgeException
 
 import comm
 import protocol
@@ -32,8 +20,8 @@ protocol.init(mycomm)
 
 sensor.reset()
 # grayscale is faster (160x120 max on OpenMV-M7)
-# sensor.set_pixformat(sensor.RGB565)
-sensor.set_pixformat(sensor.GRAYSCALE)
+sensor.set_pixformat(sensor.RGB565)
+# sensor.set_pixformat(sensor.GRAYSCALE)
 sensor.set_framesize(sensor.QQVGA)
 sensor.skip_frames(time=2000)
 clock = time.clock()
@@ -79,12 +67,12 @@ while(True):
     
     try:
         theta = preprocess.main(rects,img)
-    except Exception as e:
+    except NoEdgeException as e:
         print(e)
         continue
 
-    gRotation = getGlobalRotation(gRotation, lRotation, theta)
-    protocol.feedGlobalRotation(gRotation, pyb.millis() - startTime,frame_id)
+    # gRotation = getGlobalRotation(gRotation, lRotation, theta)
+    # protocol.feedGlobalRotation(gRotation, pyb.millis() - startTime,frame_id)
     protocol.feedLocalRotation(theta, pyb.millis() - startTime,frame_id)
     lRotation = theta
 
@@ -95,10 +83,10 @@ while(True):
         img.draw_line(x0, y0, x1, y1, color=(255, 255, 255), thickness=5)
         img.draw_line(x0, y0, x1, y1, color=(0, 0, 0), thickness=2)
 
-        [x0, y0] = [70, 60]
-        [x1, y1] = [70-int(40*cos(gRotation)), 60-int(40*sin(gRotation))]
-        img.draw_line(x0, y0, x1, y1, color=(255, 255, 255), thickness=5)
-        img.draw_line(x0, y0, x1, y1, color=(0, 0, 0), thickness=2)
+        # [x0, y0] = [70, 60]
+        # [x1, y1] = [70-int(40*cos(gRotation)), 60-int(40*sin(gRotation))]
+        # img.draw_line(x0, y0, x1, y1, color=(255, 255, 255), thickness=5)
+        # img.draw_line(x0, y0, x1, y1, color=(0, 0, 0), thickness=2)
     
 
     
