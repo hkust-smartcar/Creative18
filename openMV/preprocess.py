@@ -11,6 +11,7 @@ def main(rects, img):
     edges = formEdges(rects)
     rects = []
     edges = filterEdgesByLength(edges)
+    # edges = noEdge(edges)
     if(len(edges) == 0 ):
         raise NoEdgeException
     lRotation = getLocalRotation(edges)
@@ -27,6 +28,21 @@ def main(rects, img):
     printIntercepts(E2, img)
     # printGrid(ox,oy,ix,iy,thetaIntercept,lRotation,img)
     return lRotation
+
+"""
+[x1,x2) and 
+[y1,y2)
+"""
+def inRegion(p,x1,y1,x2,y2):
+    return p[0]>=x1 and p[0]<x2 and p[1]>=y1 and p[1]<y2
+
+def noEdge(edges):
+    edges_ = []
+    x1,y1,x2,y2 = 100, 120, 200, 230
+    for edge in edges:
+        if(inRegion(edge["corners"][0],x1,y1,x2,y2) and inRegion(edge["corners"][1],x1,y1,x2,y2)):
+            edges_.append(edge)
+    return edges_
 
 
 def worldToDisplayCoordinate(p):
@@ -281,8 +297,8 @@ def partitionChangeToUseY(edges):
 
 
 def getInterceptCommonOffsets(E1, E2, lRotation):
-    ix = 50/sin(lRotation)
-    iy = 50/sin(lRotation)
+    ix = 50/cos(lRotation)
+    iy = 50/cos(lRotation)
     if(E1[0]["interceptType"] == E2[0]["interceptType"]):
         if(E1[0]["interceptType"] == 'x'):
             partitionChangeToUseY(E2)
