@@ -7,7 +7,7 @@ import pyb
 from util import mapToWorld, mapToImage, deg
 from math import sin, cos
 import preprocess
-from exceptions import NoEdgeException
+from exceptions import NoEdgeException, NotEnoughDataException
 
 import comm
 import protocol
@@ -68,7 +68,9 @@ while(True):
     try:
         theta = preprocess.main(rects,img)
     except NoEdgeException as e:
-        print(e)
+        # print(e)
+        continue
+    except NotEnoughDataException as e:
         continue
 
     # gRotation = getGlobalRotation(gRotation, lRotation, theta)

@@ -1,6 +1,7 @@
 from math import sqrt, pi
 from pj import *
 from jp import *
+from exceptions import NotEnoughDataException
 
 """
 give two points, return euclidean distance
@@ -70,7 +71,9 @@ def median(l):
         R = None
     return R
 
-def mode(l,threshold = 0):
+
+def mode(l):
+    if(len(l)==0): raise NotEnoughDataException
     d = {}
     m = 0
     for i in l:
@@ -85,5 +88,61 @@ def mode(l,threshold = 0):
     for k in d:
         if d[k] == m:
             t.append(k)
-    print(median(t))
+    return t[0]
+
+"""
+take mode, if more than one have same frequency, take median
+"""
+def modeMedian(l):
+    if(len(l)==0): raise NotEnoughDataException
+    d = {}
+    m = 0
+    for i in l:
+        if(i in d):
+            d[i]+=1
+        else:
+            d[i]=1
+        if(d[i]>m):
+            m=d[i]
+    # print(d)
+    t = []
+    for k in d:
+        if d[k] == m:
+            t.append(k)
+    return median(t)
+
+def modeSimilarMedian(l,threshold = 0.1):
+    if(len(l)==0): raise NotEnoughDataException
+    d = {}
+    m = 0
+
+    #get mode frequency
+    for i in l:
+        if(i in d):
+            d[i]+=1
+        else:
+            d[i]=1
+        if(d[i]>m):
+            m=d[i]
+    
+    #get keys with same frequency
+    t = []
+    for k in d:
+        if d[k] == m:
+            t.append(k)
+
+    if len(t)==1:
+        return t[0]
+    
+    for i in l:
+        for j in t:
+            if(abs(i-j)<threshold):
+                d[j]+=1
+                if(d[j]>m):
+                    m=d[j]
+    t = []
+    for k in d:
+        if d[k] == m:
+            t.append(k)
+
     return median(t)
