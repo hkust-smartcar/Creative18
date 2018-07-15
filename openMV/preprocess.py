@@ -1,9 +1,9 @@
 import sensor
 import image
 import time
-from util import sqdist, dist, mapToImage, mapToWorld, sgn, median, mode, modeSimilarMedian
+from util import sqdist, dist, mapToImage, mapToWorld, sgn, median, mode, modeSimilarMedian, modeMedian
 from math import acos, pi, sin, cos, atan, tan, sqrt
-from grid import getGoodRects, sortRects, get_length
+from grid import getGoodRects, get_length
 from exceptions import NoEdgeException, StupidPartitionException
 
 
@@ -17,11 +17,22 @@ kInterceptType=3
 kIntercept=4
 
 
+def hi(rects):
+    l = len(rects)
+    for i in range(l-1,-1,-1):
+        r = rects[i]
+        for c in r:
+            if(c[1]<150):
+                rects.pop(i)
+                break
+    return rects
+
 def main(rects, img):
-    rects = sortRects(rects)
     transformRects(rects)
-    length = get_length(img, rects, 2)
-    rects = getGoodRects(rects,length,5)[-1:]
+    # rects = getGoodRects(rects,40,7)
+    rects = hi(rects)
+    #rects = sortRects(rects)[0:1]
+    # rects = getSquare(rects)#[0:1]
     edges = formEdges(rects)
     rects = []
     edges = filterEdgesByLength(edges)
@@ -173,33 +184,50 @@ def sortCorners(corners):
     return corners
 
 
-def formEdges(rects):
+def sortRects(rects):
+    rects = sorted(rects, key = lambda r: abs(r[0][0]-origin[0]))
+    return sorted(rects, key = lambda r: r[0][1] , reverse = True)
+
+
+# def getSquare(rects, threshold=5):
+#     for rect in rects:
+#         for k,p in enumerate(rect):
+#             if(dist(p,rect[k]))
+
+
+def formEdges(rects, threshold = 8):
     edges = []
     for rect in rects:
+        edges_ = []
         for k, p2 in enumerate(rect):    # k is the type of edge
             p1 = rect[k-1]
+            if(abs(dist(p1,p2)-40)>threshold):
+                edges_ = []
+                break
             theta = getTheta(p1,p2)
             interceptType = getInterceptType(theta)
             if (interceptType == 'x'):
                 intercept = getXIntercept(p1, theta)
             else:
                 intercept = getYIntercept(p1, theta)
-            edges.append([
+            edges_.append([
                 [p1,p2],
                 k,
                 theta,
                 interceptType,
                 intercept
             ])
+        edges += edges_
     return edges
 
 
 def filterEdgesByLength(edges, threshold = (30,55)):
     edges_ = []
+    length = mode(list(map(lambda e:dist(e[kCorners][0],e[kCorners][1]),edges)))
     for edge in edges:
         [p1,p2] = edge[kCorners]
         d = dist(p1, p2)
-        if (d < threshold[0] or d > threshold[1]):
+        if (abs(d-length)>2.5):
             # print("reject",d)
             # reject edges of length not in threshold
             continue
@@ -375,4 +403,4 @@ def getLocalTranslation(edges, origin, lRotation):
         else:
             print("x delta",delta,edge[kTheta])
             dxs.append(delta)
-    return [mode(dxs),mode(dys)]
+    return [modeSimilarMedian(dxs),modeSimilarMedian(dys)]

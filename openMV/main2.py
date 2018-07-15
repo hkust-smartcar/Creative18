@@ -11,6 +11,7 @@ from exceptions import NoEdgeException, NotEnoughDataException
 
 import comm
 import protocol
+import grid
 
 draw = True
 
