@@ -70,7 +70,7 @@ while(True):
         continue
 
     #sort rects
-    rects = sortRects(rects)
+    # rects = sortRects(rects)
 
     #draw raw rects
     for k, r in enumerate(rects):
@@ -88,7 +88,7 @@ while(True):
         continue
 
     #filter rects
-    rects = getGoodRects(rects, length, 15)
+    rects = getGoodRects(rects, length, 15)[-1:]
 
     #calculate the rotation
     dx, theta = get_rotation(img, rects, length, 2)

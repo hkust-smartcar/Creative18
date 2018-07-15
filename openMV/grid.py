@@ -222,13 +222,13 @@ def getLocalTranslation(corners):
 def rotateLocalTranslation(dx,dy,gRotation, theta):
     rtype = getLocalRotateType(gRotation, theta)
     if rtype==0:
-        return (50-(-dy+40)+2)%50, (50-dx+20-2)%50
+        return dy%50, -dx%50
     elif rtype==1:
-        return (dx)%50,(50-(-dy+15)-23)%50
+        return (dx)%50, dy%50
     elif rtype==2:
-        return (dy-15)%50, dx%50
+        return -dy%50, dx%50
     elif rtype==3:
-        return (50-dx+20)%50,(dy-15+25) % 50
+        return -dx%50, -dy % 50
     else:
         raise Exception('unknown rotation type ',rtype)
 

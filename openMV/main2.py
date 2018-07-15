@@ -68,9 +68,10 @@ while(True):
     try:
         theta = preprocess.main(rects,img)
     except NoEdgeException as e:
-        # print(e)
+        print("NoEdgeException")
         continue
     except NotEnoughDataException as e:
+        print("NotEnoughDataException")
         continue
 
     # gRotation = getGlobalRotation(gRotation, lRotation, theta)
