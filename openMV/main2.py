@@ -67,7 +67,7 @@ while(True):
                 img.draw_line(p[0], p[1], p_[0], p_[1], 5, color=(0, 0, 0))
     
     try:
-        theta = preprocess.main(rects,img)
+        theta, translation = preprocess.main(rects,img)
     except NoEdgeException as e:
         print("NoEdgeException")
         continue
@@ -89,6 +89,8 @@ while(True):
         [x1, y1] = mapToImage([100-int(40*cos(lRotation)), 200-int(40*sin(lRotation))])
         img.draw_line(x0, y0, x1, y1, color=(255, 255, 255), thickness=5)
         img.draw_line(x0, y0, x1, y1, color=(0, 0, 0), thickness=2)
+
+        img.draw_string(88,106,"%d, %d"%translation, color=(0,0,0))
 
         # [x0, y0] = [70, 60]
         # [x1, y1] = [70-int(40*cos(gRotation)), 60-int(40*sin(gRotation))]

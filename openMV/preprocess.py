@@ -7,7 +7,7 @@ from grid import getGoodRects, get_length
 from exceptions import NoEdgeException, StupidPartitionException, NoRectException
 
 
-origin = (145,270)
+origin = (159,318)
 
 
 kCorners = 0
@@ -47,7 +47,7 @@ def main(rects, img):
     lRotation = getLocalRotation(edges)
     edges = filterEdgesByRotation(edges, lRotation)
     edges = adjustIntercept(edges)
-    d = getLocalTranslation(edges, origin, lRotation)
+    d = getLocalTranslation(edges, lRotation)
     print("lRot: ", lRotation, "lTra: ", d)
     printEdges(edges, img)
     # E1, E2 = partitionEdges(edges)
@@ -60,7 +60,7 @@ def main(rects, img):
     # printIntercepts(E2, img)
     # printGrid(ox,oy,ix,iy,thetaIntercept,lRotation,img,color=(255,0,255))
     # printGrid(oy,ox,ix,iy,thetaIntercept,lRotation,img,color=(0,255,255))
-    return lRotation
+    return lRotation, d
 
 """
 [x1,x2) and 
@@ -367,7 +367,7 @@ def getInterceptCommonOffsets(E1, E2, lRotation):
     return [ox,oy,ix,iy,getInterceptType(lRotation)]
 
 
-def getIntersectionPoint(edge, origin, m):
+def getIntersectionPoint(edge, m):
     [xe,ye] = edge[kCorners][0]
     [x0, y0] = origin
     a = m*ye + xe
@@ -396,12 +396,12 @@ def getEdgeIntersectOffset(edge, intersectPoint):
         oy = Y%dy
     return sqrt(ox**2+oy**2)
 
-def getLocalTranslation(edges, origin, lRotation):
+def getLocalTranslation(edges, lRotation):
     m = tan(lRotation)
     dxs = []
     dys = []
     for edge in edges:
-        p = getIntersectionPoint(edge, origin, m)
+        p = getIntersectionPoint(edge, m)
         delta = getEdgeIntersectOffset(edge, p)
         if(edge[kTheta]>=pi/2):
             print("y delta",delta,edge[kTheta])
@@ -409,4 +409,4 @@ def getLocalTranslation(edges, origin, lRotation):
         else:
             print("x delta",delta,edge[kTheta])
             dxs.append(delta)
-    return [modeSimilarMedian(dxs),modeSimilarMedian(dys)]
+    return (modeSimilarMedian(dxs),modeSimilarMedian(dys))
