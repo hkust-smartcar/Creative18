@@ -7,3 +7,6 @@ class StupidPartitionException(Exception):
 
 class NotEnoughDataException(Exception):
     pass
+
+class NoRectException(Exception):
+    pass

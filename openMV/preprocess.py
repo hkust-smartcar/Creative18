@@ -4,7 +4,7 @@ import time
 from util import sqdist, dist, mapToImage, mapToWorld, sgn, median, mode, modeSimilarMedian, modeMedian
 from math import acos, pi, sin, cos, atan, tan, sqrt
 from grid import getGoodRects, get_length
-from exceptions import NoEdgeException, StupidPartitionException
+from exceptions import NoEdgeException, StupidPartitionException, NoRectException
 
 
 origin = (145,270)
@@ -33,12 +33,17 @@ def main(rects, img):
     rects = hi(rects)
     #rects = sortRects(rects)[0:1]
     # rects = getSquare(rects)#[0:1]
+    if(len(rects)==0):
+        raise NoRectException
     edges = formEdges(rects)
-    rects = []
-    edges = filterEdgesByLength(edges)
-    # edges = noEdge(edges)
+    length = mode(list(map(lambda e:dist(e[kCorners][0],e[kCorners][1]),edges)))
+    print(length)
+    edges = formEdges(rects, length = length, threshold = 10)
     if(len(edges) == 0 ):
         raise NoEdgeException
+    rects = []
+    # edges = filterEdgesByLength(edges)
+    # edges = noEdge(edges)
     lRotation = getLocalRotation(edges)
     edges = filterEdgesByRotation(edges, lRotation)
     edges = adjustIntercept(edges)
@@ -195,7 +200,7 @@ def sortRects(rects):
 #             if(dist(p,rect[k]))
 
 
-def formEdges(rects, threshold = 8):
+def formEdges(rects, length = 40, threshold = 20):
     edges = []
     for rect in rects:
         edges_ = []
@@ -221,18 +226,19 @@ def formEdges(rects, threshold = 8):
     return edges
 
 
-def filterEdgesByLength(edges, threshold = (30,55)):
-    edges_ = []
-    length = mode(list(map(lambda e:dist(e[kCorners][0],e[kCorners][1]),edges)))
-    for edge in edges:
-        [p1,p2] = edge[kCorners]
-        d = dist(p1, p2)
-        if (abs(d-length)>2.5):
-            # print("reject",d)
-            # reject edges of length not in threshold
-            continue
-        edges_.append(edge)
-    return edges_
+# def filterEdgesByLength(edges, threshold = (30,55)):
+#     edges_ = []
+#     length = mode(list(map(lambda e:dist(e[kCorners][0],e[kCorners][1]),edges)))
+#     print("length",length)
+#     for edge in edges:
+#         [p1,p2] = edge[kCorners]
+#         d = dist(p1, p2)
+#         if (abs(d-length)>3.5):
+#             # print("reject",d)
+#             # reject edges of length not in threshold
+#             continue
+#         edges_.append(edge)
+#     return edges_
 
 
 def filterEdgesByRotation(edges, lRotation, threshold = 0.1):
