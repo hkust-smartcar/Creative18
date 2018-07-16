@@ -26,7 +26,7 @@ let mainWindow
 function createWindow () {
   // Create the browser window.
   mainWindow = new BrowserWindow({
-    width: 1200,
+    width: 600,
     height: 600,
     icon: path.join(__dirname, 'icon.png')
   })

@@ -6,7 +6,7 @@ from math import acos, pi, sin, cos
 #from quicksort import quicksort
 
 
-origin = (145, 270)
+origin = (0, 0)
 
 def sortRects(rects):
     rects_ = []
@@ -47,12 +47,12 @@ def getHighestVote(votes, default):
 def get_rotation(img, rects, length, threshold):
     votes = {}
     d = 594561648413218498712
-    for rk, r in enumerate(rects):
-        c = r.corners()
+    cs = []
+    for rk, c in enumerate(rects):
+        cs += c
         min_dx = 10000
         for i, p1 in enumerate(c):
-            p1 = mapToWorld(p1)
-            p2 = mapToWorld(c[i-1])
+            p2 = c[i-1]
             # img.draw_circle(p1[0], p1[1], 5, color=(255, 0, 0))
             if p1[1] > p2[1]:
                 p1, p2 = p2, p1
@@ -66,22 +66,30 @@ def get_rotation(img, rects, length, threshold):
     try:
         R = d, acos(d/40)-pi/2
     except Exception as e:
-        print(e,d)
+        print("l69",e,d,length,votes,rects,cs)
         R = 594561648413218498712, 0
     return R
 
 
+def transformRects(rects):
+    newRects = []
+    for rect in rects:
+        corners = rect.corners()
+        newCorners = []
+        for corner in corners:
+            newCorners.append(mapToWorld(corner))
+        newRects.append(newCorners)
+    return newRects
+
 def get_length(img, rects, threshold):
     dist_votes = {}
     length = 50
-    for rk, r in enumerate(rects):
-        c = r.corners()
+    for c in rects:
         for i, p1 in enumerate(c):
-            p1 = mapToWorld(p1)
-            p2 = mapToWorld(c[i-1])
+            p2 = c[i-1]
             local_length = dist(p1, p2)
-            # if(local_length < 45 or local_length > 55):
-            #     break
+            if(local_length < 35 or local_length > 45):
+                break
             vote(dist_votes, local_length, threshold)
     length = getHighestVote(dist_votes, length)
     #print('length,', length)
@@ -90,15 +98,14 @@ def get_length(img, rects, threshold):
 
 def getGoodRects(rects, length, threshold):
     goodRects = []
-    for rect in rects:
-        corners = list(map(mapToWorld, rect.corners()))
+    for corners in rects:
         reject = False
         for k, c in enumerate(corners):
             if(abs(dist(c, corners[k-1]) - length) > threshold):
                 reject = True
                 break
         if not reject:
-            goodRects.append(rect)
+            goodRects.append(corners)
     return goodRects
 
 
@@ -148,8 +155,42 @@ def getRotateCorners(img, fixedCorners, theta):
     rotatedCorners = list(map(lambda p: rotateTransform(p, co, si), fixedCorners))
     return rotatedCorners
 
-def getLocalDisplacement(rects):
-    return rects
+"""
+return 0,1,2,3
+0: -pi/4 to pi/4
+1: pi/4 to 3pi/4
+2: 3pi/4 to 5pi/4
+3: 5pi/4 to 7pi/4
+"""
+def getLocalRotateType(gRotation,theta):
+    if gRotation<pi/4 or gRotation>7*pi/4:
+        return 0
+    elif gRotation>pi/4 and gRotation<3*pi/4:
+        return 1
+    elif gRotation>3*pi/4 and gRotation<5*pi/4:
+        return 2
+    elif gRotation>5*pi/4 and gRotation<7*pi/4:
+        return 3
+    else:
+        if theta == pi/4:
+            if gRotation==pi/4:
+                return 0
+            elif gRotation==pi/4:
+                return 1
+            elif gRotation==3*pi/4:
+                return 2
+            elif gRotation==5*pi/4:
+                return 3
+        elif theta == -pi/4:
+            if gRotation==7*pi/4:
+                return 0
+            elif gRotation==3*pi/4:
+                return 1
+            elif gRotation==5*pi/4:
+                return 2
+            elif gRotation==7*pi/4:
+                return 3
+    raise Exception('unknow angle',gRotation,theta)
 
 def getLocalTranslation(corners):
     tlcs = [] #top left corners
@@ -158,68 +199,51 @@ def getLocalTranslation(corners):
     #for each rects
     for i in range(0,len(corners),4):
         c = corners[i:i+4]
-        tlc = c[0]
-        d = sqdist([0,0],c[0])
+        tlc = [0,0]
 
-        #find its top left corner
-        for j in range(1,4,1):
-            d_ = sqdist([0,0],c[j])
-            if (d_<d):
-                tlc = c[j]
-                d = d_
-        tlcs.append(tlc)
+        #find its center point
+        for j in range(0,4,1):
+            tlc[0]+=c[j][0]
+            tlc[1]+=c[j][1]
+        tlcs.append([tlc[0]/4,tlc[1]/4])
 
     dx, dy = 0, 0
     for c in tlcs:
-        dx+=c[0]%50
-        dy+=c[1]%50
+        dx+=c[0]
+        dy+=c[1]
     
     try:
-        R = int(dx/len(tlcs)),int(dy/len(tlcs))
+        R = int(dx/len(tlcs)%50),int(dy/len(tlcs)%50)
     except Exception as e:
         print(e,tlcs)
         R = 0,0
     return R
 
 def rotateLocalTranslation(dx,dy,gRotation, theta):
-    if gRotation<pi/4 or gRotation>7*pi/4:
-        return -dx, dy
-    elif gRotation>pi/4 and gRotation<3*pi/4:
-        return -dy,-dx
-    elif gRotation>3*pi/4 and gRotation<5*pi/4:
-        return dx, -dy
-    elif gRotation>5*pi/4 and gRotation<7*pi/4:
-        return dy,dx
+    rtype = getLocalRotateType(gRotation, theta)
+    if rtype==0:
+        return dy%50, -dx%50
+    elif rtype==1:
+        return (dx)%50, dy%50
+    elif rtype==2:
+        return -dy%50, dx%50
+    elif rtype==3:
+        return -dx%50, -dy % 50
     else:
-        if theta == pi/4:
-            if gRotation==pi/4:
-                return -dx, dy
-            elif gRotation==pi/4:
-                return -dy,-dx
-            elif gRotation==3*pi/4:
-                return dx, -dy
-            elif gRotation==5*pi/4:
-                return dy,dx
-        elif theta == -pi/4:
-            if gRotation==7*pi/4:
-                return -dx, dy
-            elif gRotation==3*pi/4:
-                return -dy,-dx
-            elif gRotation==5*pi/4:
-                return dx, -dy
-            elif gRotation==7*pi/4:
-                return dy,dx
+        raise Exception('unknown rotation type ',rtype)
 
 """
 only calculate X or Y
 """
 def getGlobalSubTranslation(prevg, prevl, currl):
-    currg = prevg - prevl + currl
-    if(abs(currl - prevl)>25):
-        if(currl<25 and prevl>25):
-            currg-=50
-        elif(currl>25 and prevl<25):
-            currg+=50
+    if (prevl >= 35 and currl <= 15 and abs(prevl - currl)>25):
+        print("add 1")
+        currg = prevg + 50 - prevl + currl
+    elif (prevl <= 35 and currl >= 15 and abs(prevl - currl)>25):
+        print("minus 1")
+        currg = prevg - prevl + currl - 50
+    else:
+        currg = prevg - prevl + currl
     return currg
 
 def getGlobalTranslation(prevg, prevl, currl):

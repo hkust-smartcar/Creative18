@@ -84,9 +84,47 @@ void Wheelbase::Test1(){
 }
 
 void Wheelbase::TestOpenMVProtocol(){
-//	char str[20];
-//	sprintf(str,"r=%.4f",globalRotation);
-//	writer.WriteString(str);
+	Led::Config led_config;
+	led_config.id = 0;
+	Led led0(led_config);
+	led_config.id = 1;
+	Led led1(led_config);
+
+	St7735r::Config lcd_config;
+	lcd_config.orientation = 0;
+	St7735r lcd(lcd_config);
+	lcd.Clear();
+
+	LcdTypewriter::Config writerconfig;
+	writerconfig.lcd = &lcd;
+	LcdTypewriter writer(writerconfig);
+
+	Joystick::Config joystick_config;
+	joystick_config.id = 0;
+	joystick_config.is_active_low = true;
+	Joystick joystick(joystick_config);
+
+	DebugConsole console(&joystick,&lcd,&writer,10);
+	console.PushItem("lRotation",&localRotation,0);
+	console.PushItem("gRotation",&globalRotation,0);
+	console.PushItem("lX",&localTranslationX,0.0);
+	console.PushItem("lY",&localTranslationY,0.0);
+	console.PushItem("gX",&globalTranslationX,0.0);
+	console.PushItem("gY",&globalTranslationY,0.0);
+
+	console.ListItems();
+
+	time_t nextRender = 0;
+
+	while (true){
+		if(System::Time()>nextRender){
+			console.Listen();
+			console.ListItemValues();
+			nextRender = System::Time()+100;
+		}
+		if(System::Time()%250==0)
+		led1.Switch();
+	}
 }
 
 void Wheelbase::TestScheduler(){

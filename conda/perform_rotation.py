@@ -60,4 +60,4 @@ def rotateforeach(vid_path = "img/test2/test2.mp4",
         
     print("done rotate foreach")
     
-rotateforeach(vid_path = "img/test3/test3.mp4", json_path="img/test3/frame_details.txt", offset=2)
+#rotateforeach(vid_path = "img/test3/test3.mp4", json_path="img/test3/frame_details.txt", offset=2)

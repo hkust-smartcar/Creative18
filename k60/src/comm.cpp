@@ -36,8 +36,8 @@ void Comm::SendPackageImmediate(const Package& pkg){
 	sent_package_count++;
 	const size_t len = 6 + pkg.data.size();
 	Byte* buf = new Byte[len];
-	Byte debug[100];
-	memset(debug,0,100);
+//	Byte debug[100];
+//	memset(debug,0,100);
 	memset(buf,0,len);
 	buf[0] = 0xAA;
 	buf[1] = len;
@@ -46,7 +46,7 @@ void Comm::SendPackageImmediate(const Package& pkg){
 	memcpy(buf+4,&pkg.data[0],pkg.data.size());
 	buf[len-1] = 0xFF;
 	buf[len-2] = CalChecksum(buf,len);
-	memcpy(debug,buf,len);
+//	memcpy(debug,buf,len);
 	SendBuffer(buf,len);
 	delete buf;
 }
@@ -62,8 +62,8 @@ bool Comm::Listener(const Byte* data, const size_t& size){
 	if(buffer.size()>100){
 		while(1);
 	}
-	memset(debug,0,100);
-	memcpy(debug,&*buffer.begin(),buffer.size());
+//	memset(debug,0,100);
+//	memcpy(debug,&*buffer.begin(),buffer.size());
 	for(uint8_t i=0; i<size; i++){
 		const char& ch = data[i];
 		if (!pkg_start && ch == 0xAA) {
@@ -96,8 +96,8 @@ bool Comm::Listener(const Byte* data, const size_t& size){
 
 void Comm::BuildBufferPackage(const vector<Byte>& buffer){
 	++handled_package_sum;
-	memset(debug,0,100);
-	memcpy(debug,&*buffer.begin(),buffer[1]);
+//	memset(debug,0,100);
+//	memcpy(debug,&*buffer.begin(),buffer[1]);
 
 	uint8_t checksum = 0;
 	for(int i=0;i<buffer.size();i++){

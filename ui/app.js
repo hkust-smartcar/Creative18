@@ -172,9 +172,11 @@ var app = new Vue({
       app.cornerCtx.fillStyle = 'rgba(255, 255, 255, 1)'
       app.cornerCtx.fillRect(0, 0, 500, 500)
       corners.forEach(([x,y],k)=>{
+        x+=100
         if(link){
           try{
             const [x0,y0] = (k%4 == 0 ? corners[k+3] : corners[k-1])
+            x0+=100
             app.drawLine(app.cornerCtx, x0,y0,x,y)
           } catch(e){
             console.log(corners, corners.length, k, k+3, k-1, e)

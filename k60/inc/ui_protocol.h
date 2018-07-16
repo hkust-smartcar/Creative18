@@ -71,7 +71,9 @@ public:
 	void RequestEncoderByIdHandler(const Bluetooth::Package& pkg);
 	void RequestEncodersHandler(const Bluetooth::Package& pkg);
 	void FeedGlobalRotationHandler(const Bluetooth::Package& pkg);
+	void FeedLocalRotationHandler(const Bluetooth::Package& pkg);
 	void FeedGlobalTranslationHandler(const Bluetooth::Package& pkg);
+	void FeedLocalTranslationHandler(const Bluetooth::Package& pkg);
 	void RequestAutoFeedEncodersHandler(const Bluetooth::Package& pkg);
 
 private:
