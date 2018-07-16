@@ -1,0 +1,41 @@
+<body>
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+    crossorigin="anonymous"></script>
+  <script>
+    let rotations, translations
+    let download = (filename, text) => {
+      let element = document.createElement('a');
+      element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+      element.setAttribute('download', filename);
+
+      element.style.display = 'none';
+      document.body.appendChild(element);
+
+      element.click();
+
+      document.body.removeChild(element);
+    }
+    $.ajax({
+      url: 'log8.txt',
+      success: data => {
+        let csv = ""
+        let logs = data.match(/lRot:\s*[0-9.]+\s*lTra:\s*\([0-9.]+, [0-9.]+\)/g)
+        console.log(logs)
+        let frames = logs.map(log => {
+          let [angle, x, y] = log.match(/[0-9.]+/g)
+          // x -= 25
+          // y -= 25
+          const length = Math.sqrt(x * x + y * y)
+          csv+=`${angle},${length}\r\n`
+          return {
+            angle,
+            length
+          }
+        })
+        // download('rotation_data.json', JSON.stringify(frames))
+        download('rotation_data.csv', csv)
+      }
+    })
+
+  </script>
+</body>

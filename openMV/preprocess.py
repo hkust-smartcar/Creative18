@@ -22,7 +22,7 @@ def hi(rects):
     for i in range(l-1,-1,-1):
         r = rects[i]
         for c in r:
-            if(c[1]<150):
+            if(c[1]<140):
                 rects.pop(i)
                 break
     return rects
@@ -36,13 +36,17 @@ def main(rects, img):
     if(len(rects)==0):
         raise NoRectException
     edges = formEdges(rects)
-    length = mode(list(map(lambda e:dist(e[kCorners][0],e[kCorners][1]),edges)))
+    print(len(edges))
+    if(len(edges) == 0 ):
+        print("hey")
+        raise NoEdgeException
+    length = modeMedian(list(map(lambda e:dist(e[kCorners][0],e[kCorners][1]),edges)))
     print(length)
-    edges = formEdges(rects, length = length, threshold = 10)
+    # edges = formEdges(rects, length = length, threshold = 10)
     if(len(edges) == 0 ):
         raise NoEdgeException
     rects = []
-    # edges = filterEdgesByLength(edges)
+    # edges = filterEdgesByLength()
     # edges = noEdge(edges)
     lRotation = getLocalRotation(edges)
     edges = filterEdgesByRotation(edges, lRotation)
@@ -404,9 +408,9 @@ def getLocalTranslation(edges, lRotation):
         p = getIntersectionPoint(edge, m)
         delta = getEdgeIntersectOffset(edge, p)
         if(edge[kTheta]>=pi/2):
-            print("y delta",delta,edge[kTheta])
+            # print("y delta",delta,edge[kTheta])
             dys.append(delta)
         else:
-            print("x delta",delta,edge[kTheta])
+            # print("x delta",delta,edge[kTheta])
             dxs.append(delta)
     return (modeSimilarMedian(dxs),modeSimilarMedian(dys))
