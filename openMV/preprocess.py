@@ -7,7 +7,7 @@ from grid import getGoodRects, get_length
 from exceptions import NoEdgeException, StupidPartitionException, NoRectException
 
 
-origin = (159,318)
+origin = (0,0)
 
 
 kCorners = 0
@@ -42,11 +42,10 @@ def main(rects, img):
         raise NoEdgeException
     length = modeMedian(list(map(lambda e:dist(e[kCorners][0],e[kCorners][1]),edges)))
     print(length)
-    # edges = formEdges(rects, length = length, threshold = 10)
+    edges = formEdges(rects, length = length, threshold = 10)
     if(len(edges) == 0 ):
         raise NoEdgeException
     rects = []
-    # edges = filterEdgesByLength()
     # edges = noEdge(edges)
     lRotation = getLocalRotation(edges)
     edges = filterEdgesByRotation(edges, lRotation)
@@ -54,16 +53,11 @@ def main(rects, img):
     d = getLocalTranslation(edges, lRotation)
     print("lRot: ", lRotation, "lTra: ", d)
     printEdges(edges, img)
-    # E1, E2 = partitionEdges(edges)
-    # t1 = partitionAlignInterceptType(E1)
-    # t2 = partitionAlignInterceptType(E2)
-    # print(t1, t2)
-    # [ox,oy,ix,iy,thetaIntercept] = getInterceptCommonOffsets(E1,E2, lRotation)
-    # print(ox,oy,ix,iy,thetaIntercept,lRotation)
-    # printIntercepts(E1, img)
-    # printIntercepts(E2, img)
-    # printGrid(ox,oy,ix,iy,thetaIntercept,lRotation,img,color=(255,0,255))
-    # printGrid(oy,ox,ix,iy,thetaIntercept,lRotation,img,color=(0,255,255))
+
+    error = getLocalTranslationError(lRotation)
+    d = fixLocalTranslationError(d,lRotation,error)
+    print("fixed: ",d)
+
     return lRotation, d
 
 """
@@ -160,14 +154,6 @@ def transformRects(rects):
             corners.append(mapToWorld(corners.pop(0)))
         sortCorners(corners)
         rects.append(corners)
-    # newRects = []
-    # for rect in rects:
-    #     corners = rect.corners()
-    #     newCorners = []
-    #     for corner in corners:
-    #         newCorners.append(mapToWorld(corner))
-    #     newRects.append(sortCorners(newCorners))
-    # return newRects
 
 
 def sortCorners(corners):
@@ -198,12 +184,6 @@ def sortRects(rects):
     return sorted(rects, key = lambda r: r[0][1] , reverse = True)
 
 
-# def getSquare(rects, threshold=5):
-#     for rect in rects:
-#         for k,p in enumerate(rect):
-#             if(dist(p,rect[k]))
-
-
 def formEdges(rects, length = 40, threshold = 20):
     edges = []
     for rect in rects:
@@ -228,21 +208,6 @@ def formEdges(rects, length = 40, threshold = 20):
             ])
         edges += edges_
     return edges
-
-
-# def filterEdgesByLength(edges, threshold = (30,55)):
-#     edges_ = []
-#     length = mode(list(map(lambda e:dist(e[kCorners][0],e[kCorners][1]),edges)))
-#     print("length",length)
-#     for edge in edges:
-#         [p1,p2] = edge[kCorners]
-#         d = dist(p1, p2)
-#         if (abs(d-length)>3.5):
-#             # print("reject",d)
-#             # reject edges of length not in threshold
-#             continue
-#         edges_.append(edge)
-#     return edges_
 
 
 def filterEdgesByRotation(edges, lRotation, threshold = 0.1):
@@ -310,78 +275,22 @@ def adjustIntercept(edges):
     return edges
 
 
-def partitionEdges(edges):
-    E1 = []
-    E2 = []
-    while(len(edges)>0):
-        edge = edges.pop()
-        if edge[kType]%2 == 1:
-            E1.append(edge)
-        else:
-            E2.append(edge)
-    return E1, E2
-
-
-def partitionAlignInterceptType(edges):
-    L = list(map(lambda e:e[kInterceptType], edges))
-    interceptType = mode(L)
-    print(interceptType,L)
-    if interceptType == 'x':
-        partitionChangeToUseX(edges)
-    else: # y-intercept
-        partitionChangeToUseY(edges)
-    return interceptType
-
-
-def partitionChangeToUseX(edges):
-    for edge in edges:
-        if(edge[kTheta]==0):
-            continue #this type of edge is ridiculous
-        if(edge[kInterceptType]!='x'):
-            edge[kInterceptType] = 'x'
-            edge[kIntercept] = getXIntercept(edge[kCorners][0],edge[kTheta])
-
-
-def partitionChangeToUseY(edges):
-    for edge in edges:
-        if(edge[kTheta]==pi/2):
-            continue #this type of edge is ridiculous
-        if(edge[kInterceptType]!='y'):
-            edge[kInterceptType] = 'y'
-            edge[kIntercept] = getYIntercept(edge[kCorners][0],edge[kTheta])
-
-
-def getInterceptCommonOffsets(E1, E2, lRotation):
-    print("fuck", lRotation)
-    if(lRotation<pi/4):
-        ix = 50/cos(lRotation)
-        iy = 50/cos(lRotation)
-    else:
-        ix = 50/sin(lRotation)
-        iy = 50/sin(lRotation)
-    if(E1[0][kInterceptType] == E2[0][kInterceptType]):
-        if(E1[0][kInterceptType] == 'x'):
-            partitionChangeToUseY(E2)
-        else:
-            partitionChangeToUseX(E1)
-    elif(E1[0][kInterceptType] != 'x'):
-        E1, E2 = E1, E2
-    ox = modeSimilarMedian(list(map(lambda e:e[kIntercept]%ix, E1)))
-    oy = modeSimilarMedian(list(map(lambda e:e[kIntercept]%iy, E2)))
-    return [ox,oy,ix,iy,getInterceptType(lRotation)]
-
-
 def getIntersectionPoint(edge, m):
     [xe,ye] = edge[kCorners][0]
     [x0, y0] = origin
-    a = m*ye + xe
-    b = m*x0 - y0
-    d = 1+m**2
-    x = (a+m*b)/d
-    y = (m*a-b)/d
-    if(edge[kTheta]<pi/2):
-        x,y=y,x
-    return [x,y]
+    n = 1+m**2
+    if(edge[kTheta]>=pi/2):
+        a = m*ye + xe
+        b = m*x0 - y0
+        x = (a+m*b)/n
+        y = (m*a-b)/n
+        return [x,y]
+    else:
+        c = m*xe - ye
+        d = m*y0 + x0
+        y = (m*d - c)/n
+        x = (m*c + d)/n
+        return [x,y]
 
 def getEdgeIntersectOffset(edge, intersectPoint):
     [[x0,y0],[x1,y1]] = edge[kCorners]
@@ -414,3 +323,15 @@ def getLocalTranslation(edges, lRotation):
             # print("x delta",delta,edge[kTheta])
             dxs.append(delta)
     return (modeSimilarMedian(dxs),modeSimilarMedian(dys))
+
+def getLocalTranslationError(lRotation):
+    coefficients = [  4.68147529e+01,-4.38234706e+03, 2.95814105e+04,-8.56231655e+04
+, 1.34588696e+05,-1.23605215e+05, 6.66241559e+04,-1.99138211e+04
+, 2.75286783e+03,-7.01884772e+01, 3.35821566e+01]
+    d = 0
+    for k,c in enumerate(coefficients):
+        d += c * lRotation**k
+    return d
+
+def fixLocalTranslationError(p, lRotation, error):
+    return p[0] - sin(error), p[1] + cos(error)
