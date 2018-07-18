@@ -11,11 +11,14 @@
 #include <libbase/k60/mcg.h>
 #include <libsc/system.h>
 #include <libsc/led.h>
+#include "libbase/k60/gpio.h"
+#include "libbase/k60/spi_master.h"
 
 #include "debug_console.h"
 #include "test.h"
 #include "wheelbase.h"
 #include "scheduler.h"
+#include "mcp23s17.h"
 
 namespace libbase
 {
@@ -35,6 +38,7 @@ namespace libbase
 
 using libsc::System;
 using namespace libsc;
+using namespace libsc::k60;
 using namespace libbase::k60;
 
 int32_t encoder_value0 = 0,encoder_value1 = 0,encoder_value2 = 0;
@@ -213,11 +217,86 @@ void testOpenMV(){
 	wb.TestOpenMVProtocol();
 }
 
+void testMCP(){
+	Led::Config led_config;
+	led_config.id = 0;
+	Led led0(led_config);
+
+	SpiMaster::Config config;
+	SpiMaster::Config::Slave slave;
+	slave.cs_pin = Pin::Name::kPtb20;
+	slave.is_active_high = true;
+	config.baud_rate_khz = 10000;
+	config.sin_pin = Pin::Name::kPtb23;
+	config.sout_pin = Pin::Name::kPtb22;
+	config.sck_pin = Pin::Name::kPtb21;
+	config.slaves[0] = slave;
+
+	SpiMaster spi(config);
+
+	St7735r::Config lcd_config;
+	St7735r lcd(lcd_config);
+	lcd.Clear();
+
+	LcdTypewriter::Config writerconfig;
+	writerconfig.lcd = &lcd;
+	LcdTypewriter writer(writerconfig);
+
+	Gpo::Config gpoconfig;
+	gpoconfig.pin = Pin::Name::kPtb19;
+	Gpo ss = Gpo(gpoconfig);
+
+	Mcp23s17 mcp0(&spi,&ss,0);
+	Mcp23s17 mcp1(&spi,&ss,7);
+	char c[20];
+	while(1){
+		lcd.SetRegion({0,0,100,15});
+		sprintf(c,"%d %d",mcp0.WordRead(), mcp1.WordRead());
+		writer.WriteString(c);
+
+
+		ss.Reset();
+		uint16_t data1 = spi.ExchangeData(0,0b01000001);
+		uint16_t data2 = spi.ExchangeData(0,0x12);
+		uint16_t data3 = spi.ExchangeData(0,0x13);
+		uint16_t data4 = spi.ExchangeData(0,0x00);
+		ss.Set();
+		sprintf(c,"%d %d %d %d",data1,data2,data3,data4);
+		lcd.SetRegion({0,40,128,20});
+		writer.WriteString(c);
+
+		bool state[16];
+		uint8_t mask = 1;
+		for(int i=0; i<8; i++){
+			state[i] = data3 & mask;
+			mask<<=1;
+		}
+		mask = 1;
+		for(int i=8; i<16; i++){
+			state[i] = data4 & mask;
+			mask<<=1;
+		}
+		lcd.SetRegion({0,60,100,15});
+		sprintf(c,"%d%d%d%d %d%d%d%d",state[0],state[1],state[2],state[3],state[4],state[5],state[6],state[7]);
+		writer.WriteString(c);
+
+		lcd.SetRegion({0,80,100,15});
+		sprintf(c,"%d%d%d%d %d%d%d%d",state[8],state[9],state[10],state[11],state[12],state[13],state[14],state[15]);
+		writer.WriteString(c);
+
+
+		led0.Switch();
+		System::DelayMs(100);
+	}
+}
+
 int main(void)
 {
 	System::Init();
 
-	testOpenMV();
+	testMCP();
+
+//	testOpenMV();
 //	test();
 //	master();
 //	slave();
