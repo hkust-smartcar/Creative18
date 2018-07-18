@@ -7,7 +7,7 @@ from grid import getGoodRects, get_length
 from exceptions import NoEdgeException, StupidPartitionException, NoRectException
 
 
-origin = (0,0)
+origin = (168,356)
 
 
 kCorners = 0
@@ -51,13 +51,13 @@ def main(rects, img):
     edges = filterEdgesByRotation(edges, lRotation)
     edges = adjustIntercept(edges)
     d = getLocalTranslation(edges, lRotation)
-    print("lRot: ", lRotation, "lTra: ", d)
+    print("lRot: ", lRotation, "lTra: ", d, end=' ')
     printEdges(edges, img)
 
-    error = getLocalTranslationError(lRotation)
-    d = fixLocalTranslationError(d,lRotation,error)
+    # error = getLocalTranslationError(lRotation)
+    d = fixLocalTranslationError(d,lRotation)
     print("fixed: ",d)
-
+    print("origin:", findOrigin(edges))
     return lRotation, d
 
 """
@@ -324,14 +324,56 @@ def getLocalTranslation(edges, lRotation):
             dxs.append(delta)
     return (modeSimilarMedian(dxs),modeSimilarMedian(dys))
 
-def getLocalTranslationError(lRotation):
-    coefficients = [  4.68147529e+01,-4.38234706e+03, 2.95814105e+04,-8.56231655e+04
-, 1.34588696e+05,-1.23605215e+05, 6.66241559e+04,-1.99138211e+04
-, 2.75286783e+03,-7.01884772e+01, 3.35821566e+01]
-    d = 0
-    for k,c in enumerate(coefficients):
-        d += c * lRotation**k
-    return d
+# def getLocalTranslationError(lRotation):
+#     coefficients = [  4.68147529e+01,-4.38234706e+03, 2.95814105e+04,-8.56231655e+04
+# , 1.34588696e+05,-1.23605215e+05, 6.66241559e+04,-1.99138211e+04
+# , 2.75286783e+03,-7.01884772e+01, 3.35821566e+01]
+#     d = 0
+#     for k,c in enumerate(coefficients):
+#         d += c * lRotation**k
+#     return d
 
-def fixLocalTranslationError(p, lRotation, error):
-    return p[0] - sin(error), p[1] + cos(error)
+def fixLocalTranslationError(p, lRotation):
+    x,y = p
+    fx = [-20.44710927,  31.80396008,   8.48296412,  10.59470769]
+    if lRotation < 0.6:
+        fy = [-20.31758422,  74.69980383]
+    elif lRotation < 1.2:
+        fy = [-29.07092645,  61.92311292]
+    else: 
+        fy = [ 34.65814657, -10.87269867]
+    for k, f in enumerate(fx):
+        x -= f*lRotation**k
+    for k, f in enumerate(fy):
+        y -= f*lRotation**k
+    return (x%50, y%50)
+
+def findOrigin(edges):
+    origins = []
+    for edge in edges:
+        if(edge[kType] == 0):
+            [[x1,y1],[x2,y2]] = edge[kCorners]
+            dx = abs(x1-x2)
+            dy = abs(y1-y2)
+            x1-=dy
+            y1-=dx
+            x1-=dy
+            y1-=dx
+            x1-=dx/2
+            y1-=dy/2
+            x1-=dy/2
+            y1-=dx/2
+            m = tan(edge[kTheta] - pi/2)
+            
+            limit = 150*m - 340
+            while(m*x1-y1>limit):
+                x1-=dx
+                y1+=dy
+            
+            limit = 150 + 340*m
+            while(m*y1 + x1 < limit):
+                x1 += dy
+                y1 += dx
+            
+            origins.append([x1,y1])
+    return origins

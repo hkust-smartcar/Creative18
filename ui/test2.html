@@ -16,7 +16,7 @@
       document.body.removeChild(element);
     }
     $.ajax({
-      url: 'log8.txt',
+      url: 'log20.txt',
       success: data => {
         let csv = ""
         let logs = data.match(/lRot:\s*[0-9.]+\s*lTra:\s*\([0-9.]+, [0-9.]+\)/g)
@@ -26,14 +26,20 @@
           // x -= 25
           // y -= 25
           const length = Math.sqrt(x * x + y * y)
-          csv+=`${angle},${length}\r\n`
+          csv+=`${angle},${length},${x},${y}\r\n`
           return {
             angle,
-            length
+            length,
+            x,
+            y
           }
         })
         // download('rotation_data.json', JSON.stringify(frames))
-        download('rotation_data.csv', csv)
+        // download('rotation_data.csv', csv)
+        csv = ""
+        let logs2 = data.match(/fixed:\s+\([0-9.]+,\s*[0-9.]+\)/g)//fixed:  (22.44711, 43.31758)
+        logs2 = logs2.map((v,k)=>frames[k].angle+logs2)
+        download('fixed_data.csv',logs.reduce((prev,curr)=>prev+curr.match(/[0-9.]+/g).join()+'\r\n', ''))
       }
     })
 
