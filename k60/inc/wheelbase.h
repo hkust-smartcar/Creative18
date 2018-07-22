@@ -21,11 +21,18 @@
 #include "ui_protocol.h"
 #include "scheduler.h"
 #include "debug_console.h"
+#include "spi_encoders.h"
 
 using namespace libsc;
 
 class Protocol;
 class UiProtocol;
+
+#if defined(K60_2018_CREATIVE)
+#define MOTOR_CNT 2
+#else
+#define MOTOR_CNT 8
+#endif
 
 class Wheelbase {
 public:
@@ -87,13 +94,17 @@ public:
 		return config;
 	}
 
-	DirMotor motor0, motor1;
+	DirMotor *pMotors[8];
+#if defined(K60_2018_CREATIVE)
 	AbEncoder encoder0, encoder1;
+#else
+	SpiEncoders encoders;
+#endif
 //	DirEncoder encoder0, encoder1;
 	Servo servo;
 
 //	int32_t prev_encoder2_count = 0;
-	int32_t encoder_counts[3] = {0,0,0};
+	int32_t encoder_counts[8] = {0,0,0,0,0,0,0,0};
 
 	float globalRotation = 0;
 	uint16_t globalRotationLapse = 0;

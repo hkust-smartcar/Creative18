@@ -114,7 +114,9 @@ void Protocol::ResponseEncoderHandler(const Bluetooth::Package& pkg){
 	waiting_encoder = false;
 	memcpy(&encoder_count, &*pkg.data.begin(),4);
 	if(pWheelbase){
+#if defined(K60_2018_CREATIVE)
 		pWheelbase->encoder_counts[2] = encoder_count;
+#endif
 	}
 	if(test != nullptr){
 //		char c[20];
@@ -159,7 +161,9 @@ void Protocol::ResponseEncoderByIdHandler(const Bluetooth::Package& pkg){
 	memcpy(&count, &*pkg.data.begin()+1,4);
 	if(pWheelbase){
 		//since it is sent from slave, it is assumed to be id 2 for master
+#if defined(K60_2018_CREATIVE)
 		pWheelbase->encoder_counts[2] = count;
+#endif
 	}
 }
 
@@ -170,6 +174,7 @@ void Protocol::RequestAutoFeedEncodersHandler(const Bluetooth::Package& pkg){
 		//clear the previous auto feed job
 		pWheelbase->pScheduler->ClearInterval(auto_feed_encoder_job_id);
 
+#if defined(K60_2018_CREATIVE)
 		//non zero interval reschedule
 		if(interval){
 			auto_feed_encoder_job_id = pWheelbase->pScheduler->SetInterval([&]{
@@ -180,5 +185,6 @@ void Protocol::RequestAutoFeedEncodersHandler(const Bluetooth::Package& pkg){
 				}
 			},interval);
 		}
+#endif
 	}
 }

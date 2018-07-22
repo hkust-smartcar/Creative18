@@ -10,10 +10,10 @@
 Wheelbase::Wheelbase():
 //lcd(GetLcdConfig()),
 //writer(GetTypeWriterConfig()),
-motor0(GetMotorConfig(0)),
-motor1(GetMotorConfig(1)),
+#if defined(K60_2018_CREATIVE)
 encoder0(GetEncoderConfig(0)),
 encoder1(GetEncoderConfig(1)),
+#endif
 servo(GetServoConfig(0))
 //lcd(GetLcdConfig()),
 //writer(GetTypeWriterConfig())
@@ -21,28 +21,47 @@ servo(GetServoConfig(0))
 	pScheduler = new Scheduler(0, 75000*250);
 	pProtocol = new Protocol(pScheduler, this);
 	pUiProtocol = new UiProtocol(pScheduler, this);
+	for(uint8_t i = 0; i < MOTOR_CNT; i++){
+		pMotors[i] = new DirMotor(GetMotorConfig(i));
+	}
 }
 
 Wheelbase::~Wheelbase(){
 	delete pProtocol;
 	delete pUiProtocol;
 	delete pScheduler;
+	for(uint8_t i = 0; i < MOTOR_CNT; i++){
+		delete pMotors[i];
+	}
 }
 
 void Wheelbase::MotorSetPower(uint8_t id, int16_t speed){
+#if defined(K60_2018_CREATIVE)
 	switch(id){
 	case 0:
-		motor0.SetClockwise(speed<0);
-		motor0.SetPower(abs(speed));
-		break;
 	case 1:
-		motor1.SetClockwise(speed<0);
-		motor1.SetPower(abs(speed));
+		pMotors[id]->SetClockwise(speed<0);
+		pMotors[id]->SetPower(abs(speed));
 		break;
 	case 2:
 		pProtocol->RequestSetMotor(speed);
 		break;
 	}
+#else
+	switch(id){
+	case 0:
+	case 1:
+	case 2:
+	case 3:
+	case 4:
+	case 5:
+	case 6:
+	case 7:
+		pMotors[id]->SetPower(abs(speed));
+		pMotors[id]->SetClockwise(speed<0);
+
+	}
+#endif
 }
 
 void Wheelbase::ServoSetDegree(uint8_t id, uint16_t degree){
@@ -57,16 +76,24 @@ void Wheelbase::ServoSetDegree(uint8_t id, uint16_t degree){
 }
 
 void Wheelbase::UpdateEncoders(){
+#if defined(K60_2018_CREATIVE)
 	encoder0.Update();
 	encoder_counts[0] += encoder0.GetCount();
 	encoder1.Update();
 	encoder_counts[1] += encoder1.GetCount();
+#else
+	encoders.Update();
+#endif
 //	encoder_counts[2] = pProtocol->AwaitRequestEncoder();
 }
 
 int32_t Wheelbase::EncoderGetCount(uint8_t id){
 //	Wheelbase::UpdateEncoders();
+#if defined(K60_2018_CREATIVE)
 	return encoder_counts[id];
+#else
+	return encoders.GetCount(id);
+#endif
 }
 
 void Wheelbase::SetSpeedLocalXY(int16_t speedx, int16_t speedy){

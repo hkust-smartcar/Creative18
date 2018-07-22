@@ -172,11 +172,11 @@ void UiProtocol::RequestAutoFeedEncodersHandler(const Bluetooth::Package& pkg){
 			auto_feed_encoder_job_id = pWheelbase->pScheduler->SetInterval([&]{
 				pWheelbase->UpdateEncoders();
 				for(int i=0; i<3; i++){
-					if(encoder_img[i] != pWheelbase->encoder_counts[i]){
-						ResponseEncoderById(i,pWheelbase->encoder_counts[i]);
+					if(encoder_img[i] != pWheelbase->EncoderGetCount(i)){
+						ResponseEncoderById(i,pWheelbase->EncoderGetCount(i));
 					}
+					encoder_img[i] = pWheelbase->EncoderGetCount(i);
 				}
-				memcpy(encoder_img,pWheelbase->encoder_counts,12);
 			},interval);
 		}
 	}
