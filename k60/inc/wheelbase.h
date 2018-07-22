@@ -48,6 +48,9 @@ public:
 
 	void UpdateEncoderToRemote();
 
+	void MagnetRelease(uint8_t id);
+	void MagnetAttrack(uint8_t id);
+
 	void Test1();
 
 	void TestOpenMVProtocol();
@@ -99,6 +102,16 @@ public:
 	AbEncoder encoder0, encoder1;
 #else
 	SpiEncoders encoders;
+	Gpo *pMagnets[6];
+
+	Pin::Name magnetPins[6] = {
+			Pin::Name::kPta24,
+			Pin::Name::kPta25,
+			Pin::Name::kPta26,
+			Pin::Name::kPta27,
+			Pin::Name::kPta28,
+			Pin::Name::kPta29,
+	};
 #endif
 //	DirEncoder encoder0, encoder1;
 	Servo servo;

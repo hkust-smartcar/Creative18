@@ -24,6 +24,13 @@ servo(GetServoConfig(0))
 	for(uint8_t i = 0; i < MOTOR_CNT; i++){
 		pMotors[i] = new DirMotor(GetMotorConfig(i));
 	}
+#if not defined(K60_2018_CREATIVE)
+	Gpo::Config gpoConfig;
+	for(uint8_t i = 0; i < 6; i++){
+		gpoConfig.pin = magnetPins[i];
+		pMagnets[i] = new Gpo(gpoConfig);
+	}
+#endif
 }
 
 Wheelbase::~Wheelbase(){
@@ -33,6 +40,13 @@ Wheelbase::~Wheelbase(){
 	for(uint8_t i = 0; i < MOTOR_CNT; i++){
 		delete pMotors[i];
 	}
+#if not defined(K60_2018_CREATIVE)
+	Gpo::Config gpoConfig;
+	for(uint8_t i = 0; i < 6; i++){
+		gpoConfig.pin = magnetPins[i];
+		delete pMagnets[i];
+	}
+#endif
 }
 
 void Wheelbase::MotorSetPower(uint8_t id, int16_t speed){
