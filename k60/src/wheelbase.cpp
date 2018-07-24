@@ -13,18 +13,20 @@ Wheelbase::Wheelbase():
 #if defined(K60_2018_CREATIVE)
 encoder0(GetEncoderConfig(0)),
 encoder1(GetEncoderConfig(1)),
+#else
+encoder2(GetEncoderConfig(0)),
 #endif
 servo(GetServoConfig(0))
 //lcd(GetLcdConfig()),
 //writer(GetTypeWriterConfig())
 {
 	pScheduler = new Scheduler(0, 75000*250);
-	pProtocol = new Protocol(pScheduler, this);
-	pUiProtocol = new UiProtocol(pScheduler, this);
+	pProtocol = new Protocol(0,pScheduler, this);
+	pUiProtocol = new UiProtocol(1,pScheduler, this);
 	for(uint8_t i = 0; i < MOTOR_CNT; i++){
 		pMotors[i] = new DirMotor(GetMotorConfig(i));
 	}
-#if not defined(K60_2018_CREATIVE)
+#if defined(K60_2018_CREATIVE2)
 	Gpo::Config gpoConfig;
 	for(uint8_t i = 0; i < 6; i++){
 		gpoConfig.pin = magnetPins[i];
@@ -96,7 +98,9 @@ void Wheelbase::UpdateEncoders(){
 	encoder1.Update();
 	encoder_counts[1] += encoder1.GetCount();
 #else
-	encoders.Update();
+	encoder2.Update();
+	encoder_counts[2] += encoder2.GetCount();
+//	encoders.Update();
 #endif
 //	encoder_counts[2] = pProtocol->AwaitRequestEncoder();
 }
@@ -106,7 +110,7 @@ int32_t Wheelbase::EncoderGetCount(uint8_t id){
 #if defined(K60_2018_CREATIVE)
 	return encoder_counts[id];
 #else
-	return encoders.GetCount(id);
+	return encoder_counts[id];
 #endif
 }
 
@@ -184,3 +188,45 @@ void Wheelbase::TestScheduler(){
 //	writerconfig.lcd = &lcd;
 //	return writerconfig;
 //}
+
+void Wheelbase::TestUartEncoders(){
+#if defined(K60_2018_CREATIVE2)
+	pProtocol->RequestAutoFeedEncodersById(0,1);
+	pProtocol->RequestAutoFeedEncodersById(1,1);
+#endif
+//	pProtocol->ResponseEncoderById(0,1234);
+//	pProtocol->ResponseEncoderById(1,4567);
+
+	Led::Config ledconfid;
+	ledconfid.id = 0;
+	Led led0(ledconfid);
+
+	St7735r::Config lcd_config;
+	lcd_config.orientation = 0;
+	St7735r lcd(lcd_config);
+	lcd.Clear();
+
+	LcdTypewriter::Config writerconfig;
+	writerconfig.lcd = &lcd;
+	LcdTypewriter writer(writerconfig);
+
+	Joystick::Config joystick_config;
+	joystick_config.id = 0;
+	joystick_config.is_active_low = true;
+	Joystick joystick(joystick_config);
+
+	DebugConsole console(&joystick,&lcd,&writer,10);
+	console.PushItem("encoder0",&encoder_counts[0],float(0.0));
+	console.PushItem("encoder1",&encoder_counts[1],float(0.0));
+	console.PushItem("encoder2",&encoder_counts[2],float(0.0));
+
+	console.ListItems();
+
+	while(1){
+		UpdateEncoders();
+		console.ListItemValues();
+		led0.Switch();
+		System::DelayMs(10);
+
+	}
+}

@@ -2,6 +2,22 @@
 
 > To have the best view of this document, download [Typora](https://typora.io), the best Markdown editor ever
 
+## Hardware Specifications
+
+### 1. UART Allocation
+
+PTE24 UART4_RX (BT) -> UiProtocol
+PTE25 UART4_TX (BT) -> UiProtocol
+
+PTB10 UART3_RX (UART) -> Protocol
+PTB11 UART3_TX (UART) -> Protocol
+
+PTB16 UART0_RX (GPIO1) -> OpenMV1
+PTB17 UART0_TX (GPIO2) -> OpenMV1
+
+PTD2 UART1_RX (SOUT) -> OpenMV2
+PTD3 UART1_TX (SIN) -> OpenMV2
+
 ## Software Specifications
 
 ### I. Data Structure
@@ -53,6 +69,7 @@ kFeedGlobalRotation = 0x0A,
 kFeedGlobalTranslation = 0x0B,
 kRequestSetServo = 0x0C,
 kRequestAutoFeedEncoders = 0x0D,
+kRequestAutoFeedEncodersById = 0x0E,
 kFeedCorners = 0xA0,
 kFeedLocalRotation = 0xA1,
 kFeedLocalTranslation = 0xA2
@@ -378,4 +395,14 @@ OpenMV->Ui: kFeedLocalTranslation
 Ui->OpenMV: kACK
 ```
 
-##### 
+##### 14. Request Auto Feed Encoders By Id
+
+###### data:
+
+`uint8_t` id
+
+`uint16_t` interval in ms for checking encoders, send when encoder value is changed, 0 for canceling the auto feed. If an auto feed is already started in the protocol, it will overwrite the original one
+
+###### return:
+
+none

@@ -32,15 +32,15 @@ public:
 	Wheelbase* pWheelbase;
 	Scheduler* pScheduler;
 
-	Protocol(Scheduler* pScheduler):m_bt(1,pScheduler), test(nullptr), pWheelbase(nullptr), pScheduler(pScheduler){
+	Protocol(uint8_t id, Scheduler* pScheduler):m_bt(id,pScheduler), test(nullptr), pWheelbase(nullptr), pScheduler(pScheduler){
 		Init();
 	}
 
-	Protocol(Scheduler* pScheduler, Test* t):m_bt(1,pScheduler), test(t), pWheelbase(nullptr){
+	Protocol(uint8_t id, Scheduler* pScheduler, Test* t):m_bt(id,pScheduler), test(t), pWheelbase(nullptr){
 		Init();
 	}
 
-	Protocol(Scheduler* pScheduler, Wheelbase* wb):m_bt(1,pScheduler), test(nullptr), pWheelbase(wb){
+	Protocol(uint8_t id, Scheduler* pScheduler, Wheelbase* wb):m_bt(id,pScheduler), test(nullptr), pWheelbase(wb){
 		Init();
 	}
 
@@ -72,6 +72,7 @@ public:
 	uint8_t ResponseEncoderById(uint8_t id, int32_t count);
 	uint8_t RequestSetServo(uint16_t degree);
 	uint8_t RequestAutoFeedEncoders(uint16_t interval);
+	uint8_t RequestAutoFeedEncodersById(uint8_t id, uint16_t interval);
 	int32_t AwaitRequestEncoder(LcdTypewriter* t = nullptr);
 
 	void Handler(const Bluetooth::Package& pkg);
@@ -82,6 +83,7 @@ public:
 	void ResponseEncoderByIdHandler(const Bluetooth::Package& pkg);
 	void RequestSetServoHandler(const Bluetooth::Package& pkg);
 	void RequestAutoFeedEncodersHandler(const Bluetooth::Package& pkg);
+	void RequestAutoFeedEncodersByIdHandler(const Bluetooth::Package& pkg);
 
 	int32_t GetEncoderCount(){return encoder_count;}
 
@@ -89,7 +91,9 @@ private:
 	bool recievedPackageId[10];
 	uint8_t filteredRecievedPackageSumByType[10];
 	uint16_t auto_feed_encoder_job_id = -1;
+	uint16_t auto_feed_encoder_job_ids[8];
 	int32_t encoder_img = 0;
+	int32_t encoder_imgs[8];
 
 	bool waiting_encoder = false;
 	int32_t encoder_count = 0;

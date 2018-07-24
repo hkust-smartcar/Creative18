@@ -28,15 +28,15 @@ public:
 	Wheelbase* pWheelbase;
 	Scheduler* pScheduler;
 
-	UiProtocol(Scheduler* pScheduler):m_bt(0,pScheduler), test(nullptr), pWheelbase(nullptr), pScheduler(pScheduler){
+	UiProtocol(uint8_t id, Scheduler* pScheduler):m_bt(id,pScheduler), test(nullptr), pWheelbase(nullptr), pScheduler(pScheduler){
 		Init();
 	}
 
-	UiProtocol(Scheduler* pScheduler, Test* t):m_bt(0,pScheduler), test(t), pWheelbase(nullptr){
+	UiProtocol(uint8_t id, Scheduler* pScheduler, Test* t):m_bt(id,pScheduler), test(t), pWheelbase(nullptr){
 		Init();
 	}
 
-	UiProtocol(Scheduler* pScheduler, Wheelbase* wb):m_bt(0,pScheduler), test(nullptr), pWheelbase(wb){
+	UiProtocol(uint8_t id, Scheduler* pScheduler, Wheelbase* wb):m_bt(id,pScheduler), test(nullptr), pWheelbase(wb){
 		Init();
 	}
 

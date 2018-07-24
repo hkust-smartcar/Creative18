@@ -276,11 +276,51 @@ void testMCP(){
 	}
 }
 
+void testSpiEncoders(){
+	Led::Config led_config;
+	led_config.id = 0;
+	Led led0(led_config);
+
+	St7735r::Config lcd_config;
+	St7735r lcd(lcd_config);
+	lcd.Clear();
+
+	LcdTypewriter::Config writerconfig;
+	writerconfig.lcd = &lcd;
+	LcdTypewriter writer(writerconfig);
+
+	SpiEncoders encoders;
+	int32_t counts[8] = {};
+	char c[20];
+	while(1){
+		encoders.Update();
+		for(int i=0; i<8; i++){
+			counts[i]=encoders.GetCount(i);
+			sprintf(c,"%d",counts[i]);
+			int y = i*20;
+			lcd.SetRegion({0,y,128,20});
+			writer.WriteString(c);
+			System::DelayMs(1);
+		}
+		led0.Switch();
+		System::DelayMs(10);
+	}
+
+}
+
+void testUartEncoder(){
+	Wheelbase wb;
+	wb.TestUartEncoders();
+}
+
 int main(void)
 {
 	System::Init();
 
-	testMCP();
+	testUartEncoder();
+
+//	testMCP();
+//	testSpiEncoders();
 
 //	testOpenMV();
 //	test();

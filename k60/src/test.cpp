@@ -9,7 +9,7 @@
 
 Test::Test():lcd(GetLcdConfig()),writer(GetTypeWriterConfig()){
 	pScheduler = new Scheduler(1, 75000*250);
-	pProtocol = new Protocol(pScheduler,this);
+	pProtocol = new Protocol(1,pScheduler,this);
 }
 
 Test::~Test(){

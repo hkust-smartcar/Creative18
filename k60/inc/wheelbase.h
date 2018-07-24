@@ -57,6 +57,8 @@ public:
 
 	void TestScheduler();
 
+	void TestUartEncoders();
+
 	bool flag = false;
 //private:
 
@@ -101,9 +103,11 @@ public:
 #if defined(K60_2018_CREATIVE)
 	AbEncoder encoder0, encoder1;
 #else
-	SpiEncoders encoders;
-	Gpo *pMagnets[6];
+	AbEncoder encoder2;
+//	SpiEncoders encoders;
 
+	Gpo *pMagnets[6];
+//
 	Pin::Name magnetPins[6] = {
 			Pin::Name::kPta24,
 			Pin::Name::kPta25,

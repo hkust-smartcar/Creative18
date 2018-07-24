@@ -60,6 +60,7 @@ public:
 		kFeedGlobalTranslation = 0x0B,
 		kRequestSetServo = 0x0C,
 		kRequestAutoFeedEncoders = 0x0D,
+		kRequestAutoFeedEncodersById = 0x0E,
 		kFeedCorners = 0xA0,
 		kFeedLocalRotation = 0xA1,
 		kFeedLocalTranslation = 0xA2;

@@ -44,6 +44,9 @@ void Protocol::Handler(const Bluetooth::Package& pkg){
 	case Bluetooth::PkgType::kRequestAutoFeedEncoders:
 		RequestAutoFeedEncodersHandler(pkg);
 		break;
+	case Bluetooth::PkgType::kRequestAutoFeedEncodersById:
+		RequestAutoFeedEncodersByIdHandler(pkg);
+		break;
 	}
 }
 
@@ -80,6 +83,13 @@ uint8_t Protocol::RequestAutoFeedEncoders(uint16_t interval){
 	vector<Byte> data(2,0);
 	memcpy(&*data.begin(),&interval,2);
 	return m_bt.QueuePackage({Bluetooth::PkgType::kRequestAutoFeedEncoders,0,data});
+}
+
+uint8_t Protocol::RequestAutoFeedEncodersById(uint8_t id, uint16_t interval){
+	vector<Byte> data(3,0);
+	memcpy(&*data.begin(),&id,1);
+	memcpy(&*data.begin()+1,&interval,2);
+	return m_bt.QueuePackage({Bluetooth::PkgType::kRequestAutoFeedEncodersById,0,data});
 }
 
 void Protocol::RequestSetMotorHandler(const Bluetooth::Package& pkg){
@@ -155,14 +165,16 @@ void Protocol::RequestSetServoHandler(const Bluetooth::Package& pkg){
 }
 
 void Protocol::ResponseEncoderByIdHandler(const Bluetooth::Package& pkg){
-//	uint8_t id;
+	uint8_t id;
 	int32_t count;
-//	memcpy(&id, &*pkg.data.begin(),1);
+	memcpy(&id, &*pkg.data.begin(),1);
 	memcpy(&count, &*pkg.data.begin()+1,4);
 	if(pWheelbase){
 		//since it is sent from slave, it is assumed to be id 2 for master
 #if defined(K60_2018_CREATIVE)
 		pWheelbase->encoder_counts[2] = count;
+#elif defined(K60_2018_CREATIVE2)
+		pWheelbase->encoder_counts[id] = count;
 #endif
 	}
 }
@@ -186,5 +198,28 @@ void Protocol::RequestAutoFeedEncodersHandler(const Bluetooth::Package& pkg){
 			},interval);
 		}
 #endif
+	}
+}
+
+
+void Protocol::RequestAutoFeedEncodersByIdHandler(const Bluetooth::Package& pkg){
+	uint8_t id;
+	memcpy(&id, &*pkg.data.begin(),1);
+	uint16_t interval;
+	memcpy(&interval, &*pkg.data.begin()+1,2);
+	if(pWheelbase){
+		//clear the previous auto feed job
+		pWheelbase->pScheduler->ClearInterval(auto_feed_encoder_job_ids[id]);
+
+
+		if(interval){
+			auto_feed_encoder_job_ids[id] = pWheelbase->pScheduler->SetInterval([&, id]{
+				pWheelbase->UpdateEncoders();
+				if(encoder_imgs[id] != pWheelbase->encoder_counts[id]){
+					ResponseEncoderById(id,pWheelbase->encoder_counts[id]);
+					encoder_imgs[id] = pWheelbase->encoder_counts[id];
+				}
+			},interval);
+		}
 	}
 }
