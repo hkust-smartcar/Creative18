@@ -20,19 +20,21 @@ servo(GetServoConfig(0))
 //lcd(GetLcdConfig()),
 //writer(GetTypeWriterConfig())
 {
-	pScheduler = new Scheduler(0, 75000*250);
-	pProtocol = new Protocol(0,pScheduler, this);
-	pUiProtocol = new UiProtocol(1,pScheduler, this);
-	for(uint8_t i = 0; i < MOTOR_CNT; i++){
-		pMotors[i] = new DirMotor(GetMotorConfig(i));
-	}
 #if defined(K60_2018_CREATIVE2)
 	Gpo::Config gpoConfig;
 	for(uint8_t i = 0; i < 6; i++){
 		gpoConfig.pin = magnetPins[i];
 		pMagnets[i] = new Gpo(gpoConfig);
 	}
+	pScheduler = new Scheduler(0, 75000*250);
+#else
+	pScheduler = new Scheduler(0, 75000);
 #endif
+	pProtocol = new Protocol(0,pScheduler, this);
+	pUiProtocol = new UiProtocol(1,pScheduler, this);
+	for(uint8_t i = 0; i < MOTOR_CNT; i++){
+		pMotors[i] = new DirMotor(GetMotorConfig(i));
+	}
 }
 
 Wheelbase::~Wheelbase(){

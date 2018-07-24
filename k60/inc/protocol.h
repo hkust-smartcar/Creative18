@@ -70,6 +70,7 @@ public:
 	uint8_t RequestEncoder();
 	uint8_t ResponseEncoder(int32_t count);
 	uint8_t ResponseEncoderById(uint8_t id, int32_t count);
+	uint8_t FeedEncoderById(uint8_t id, int32_t count);
 	uint8_t RequestSetServo(uint16_t degree);
 	uint8_t RequestAutoFeedEncoders(uint16_t interval);
 	uint8_t RequestAutoFeedEncodersById(uint8_t id, uint16_t interval);

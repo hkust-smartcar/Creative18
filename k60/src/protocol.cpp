@@ -66,6 +66,14 @@ uint8_t Protocol::ResponseEncoder(int32_t count){
 	return m_bt.QueuePackage({Bluetooth::PkgType::kResponseEncoder,0,data});
 }
 
+uint8_t Protocol::FeedEncoderById(uint8_t id, int32_t count){
+	vector<Byte> data(5,0);
+	memcpy(&*data.begin(), &id, 1);
+	memcpy(&*data.begin()+1, &count, 4);
+	m_bt.SendPackageImmediate({Bluetooth::PkgType::kResponseEncoderById,0,data});
+	return 0;
+}
+
 uint8_t Protocol::ResponseEncoderById(uint8_t id, int32_t count){
 	vector<Byte> data(5,0);
 	memcpy(&*data.begin(), &id, 1);
@@ -216,7 +224,7 @@ void Protocol::RequestAutoFeedEncodersByIdHandler(const Bluetooth::Package& pkg)
 			auto_feed_encoder_job_ids[id] = pWheelbase->pScheduler->SetInterval([&, id]{
 				pWheelbase->UpdateEncoders();
 				if(encoder_imgs[id] != pWheelbase->encoder_counts[id]){
-					ResponseEncoderById(id,pWheelbase->encoder_counts[id]);
+					FeedEncoderById(id,pWheelbase->encoder_counts[id]);
 					encoder_imgs[id] = pWheelbase->encoder_counts[id];
 				}
 			},interval);
